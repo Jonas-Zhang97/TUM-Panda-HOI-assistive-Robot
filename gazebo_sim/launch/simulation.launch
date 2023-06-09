@@ -1,7 +1,9 @@
 <launch>
     <arg name="world_suffix" default="empty"/>
+    <arg name="rviz_config" default="sim_config"/>
+    
     <include file="$(find panda_moveit_config)/launch/demo_gazebo.launch" pass_all_args="true">
-        <arg name="def_rviz_config" value="std_config_n_cam"/>
+        <arg name="def_rviz_config" value="$(arg rviz_config)"/>
         <arg name="world" value="$(find gazebo_sim)/worlds/$(arg world_suffix).world"/>
     </include>
 </launch>

@@ -1,6 +1,0 @@
-<launch>
-
-  <node name="robot_motion" pkg="motion_control" type="control" respawn="false" output="screen">
-  </node>
-
-</launch>

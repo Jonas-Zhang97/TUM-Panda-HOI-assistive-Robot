@@ -65,6 +65,8 @@
   <build_depend>tf2_ros</build_depend>
   <build_depend>tf2_eigen</build_depend>
   <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>franka_gripper</build_depend>
+  <build_depend>std_msgs</build_depend>
 
   <run_depend>panda_moveit_config</run_depend>
   <run_depend>franka_description</run_depend>
@@ -90,6 +92,8 @@
   <run_depend>xacro</run_depend>
   <run_depend>nodelet</run_depend>
   <run_depend>gazebo_ros</run_depend>
+  <run_depend>franka_gripper</run_depend>
+  <run_depend>std_msgs</run_depend>
 
   <test_depend>moveit_resources_panda_moveit_config</test_depend>
   <test_depend>rosunit</test_depend>

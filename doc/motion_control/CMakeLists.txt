@@ -18,6 +18,8 @@ find_package(catkin REQUIRED
     tf2_ros
     tf2_eigen
     tf2_geometry_msgs
+    franka_gripper
+    std_msgs
 )
 
 find_package(Eigen3 REQUIRED)
@@ -33,6 +35,8 @@ catkin_package(
     moveit_ros_planning_interface
     interactive_markers
     tf2_geometry_msgs
+    franka_gripper
+    std_msgs
   DEPENDS
     EIGEN3
 )

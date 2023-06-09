@@ -23,8 +23,9 @@ bool RobotMotion::hand_open()
     {
         hand_group.execute(hand_open);
         ROS_INFO_STREAM("Hand opened successfully");
-        return true;
     }
+
+    return true;
 }
 
 bool RobotMotion::hand_close_franka()
@@ -58,8 +59,9 @@ bool RobotMotion::hand_close()
     {
         hand_group.execute(hand_close);
         ROS_INFO_STREAM("Hand closed successfully");
-        return true;
     }
+
+    return true;
 }
 
 bool RobotMotion::homing()
@@ -85,9 +87,10 @@ bool RobotMotion::homing()
         else
         {
             ROS_INFO_STREAM("Homing successfully");
-            return true;
         }
     }
+
+    return true;
 }
 
 bool RobotMotion::arm_to_target_pose(geometry_msgs::PoseStamped& pose)
@@ -105,6 +108,7 @@ bool RobotMotion::arm_to_target_pose(geometry_msgs::PoseStamped& pose)
     {
         ROS_INFO_STREAM("Path found, executing...");
         arm_group.execute(to_target_pose);
-        return true;
     }
+
+    return true;
 }

@@ -33,7 +33,7 @@ int main(int argc, char** argv)
   arm_motion.hand_close();
   arm_motion.visual_tools.prompt("Press 'next' to continue");
   
-  arm_motion.hand_open();
+  arm_motion.homing();
   arm_motion.visual_tools.prompt("Press 'next' to end the demo");
   
   arm_motion.PSI.removeCollisionObjects(arm_motion.PSI.getKnownObjectNames());

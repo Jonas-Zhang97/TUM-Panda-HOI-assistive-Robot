@@ -25,6 +25,8 @@ rosdep install --from-paths src --ignore-src --rosdistro noetic -y --skip-keys l
 ```
 Once you are done with installation, you can continue to [download MoveIt source](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html), remember to put all the packages in the ws_project/src folder, you should stop at "Build your Catkin Workspace" section, for we will build the workspace later, please also note that there is no need to download panda_moveit_config package and the example code provided by MoveIt, because we will use our own code.
 
+Now you should also clone the [darknet](https://github.com/leggedrobotics/darknet_ros) for object detection in the same workspace as before, you can also stop before building your workspace.
+
 ## Download Source Code
 Before you start with this section, please make sure that the "panda_moveit_config" package is deleted, which could be downloaded in previous steps, we will use our own panda_moveit_config package.
 
@@ -35,7 +37,8 @@ cd ~/ws_project
 ```
 it is important to also put these packages in the same workspace as before.
 
-Then, build the workspace (this may take a while):
+## Build the Workspace
+Build the workspace as follows (this may take a while):
 ```
 cd ~/ws_project
 catkin build -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=~/libfranka/build

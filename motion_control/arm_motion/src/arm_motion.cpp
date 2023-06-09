@@ -5,9 +5,7 @@ bool ArmMotion::hand_open()
     hand_group.setStartStateToCurrentState();
     hand_group.setNamedTarget("open");
 
-    moveit::planning_interface::MoveGroupInterface::Plan hand_open;
-
-    bool hand_open_success = (hand_group.plan(hand_open) == moveit::core::MoveItErrorCode::SUCCESS);
+    bool hand_open_success = (hand_group.plan(hand_plan) == moveit::core::MoveItErrorCode::SUCCESS);
     if (!hand_open_success)
     {
         ROS_ERROR_STREAM("Unable to open the gripper");
@@ -15,7 +13,7 @@ bool ArmMotion::hand_open()
     }
     else
     {
-        hand_group.asyncExecute(hand_open);
+        hand_group.move();
         ROS_INFO_STREAM("Hand opened successfully");
     }
 
@@ -38,34 +36,29 @@ bool ArmMotion::hand_close_franka()
 
 bool ArmMotion::hand_close()
 {
-  // This is implementation using moveit classes
-  hand_group.setNamedTarget("close");
+  // This is implementation using moveit API
+  hand_group.setJointValueTarget(hand_group.getNamedTargetValues("close"));
   
-  moveit::planning_interface::MoveGroupInterface::Plan hand_close;
-  
-  bool hand_close_success = (hand_group.plan(hand_close) == moveit::core::MoveItErrorCode::SUCCESS);
+  bool hand_close_success = (hand_group.plan(hand_plan) == moveit::core::MoveItErrorCode::SUCCESS);
   if (!hand_close_success)
   {
       ROS_ERROR_STREAM("Unable to close the gripper");
       return false;
   }
   else
-  {    
-        hand_group.asyncExecute();
-        // ros::Duration(0.01).sleep();
-        hand_group.stop();
-        ROS_INFO_STREAM("Hand closed successfully");
-    }
+  {
+    hand_group.move();
+  }
 
-    return true;
+  return true;
 }
 
 bool ArmMotion::homing()
 {
     arm_group.setNamedTarget("ready");
-    moveit::planning_interface::MoveGroupInterface::Plan arm_ready;
+    moveit::planning_interface::MoveGroupInterface::Plan arm_plan;
 
-    bool arm_ready_success = (arm_group.plan(arm_ready) == moveit::core::MoveItErrorCode::SUCCESS);
+    bool arm_ready_success = (arm_group.plan(arm_plan) == moveit::core::MoveItErrorCode::SUCCESS);
     if (!arm_ready_success)
     {
         ROS_ERROR_STREAM("The panda arm is not able to move back to ready");
@@ -73,16 +66,7 @@ bool ArmMotion::homing()
     }
     else
     {
-        arm_group.execute(arm_ready);
-        
-        if(!hand_close())
-        {
-            ROS_ERROR_STREAM("Arm homing successfully, but unable to close the gripper");
-        }
-        else
-        {
-            ROS_INFO_STREAM("Homing successfully");
-        }
+        arm_group.move();
     }
 
     return true;
