@@ -53,7 +53,6 @@ int main(int argc, char** argv)
 
   // Start motion
   robot_motion.hand_open();
-  robot_motion.homing();
 
   rviz_scene.visual_tools.prompt("Press 'next' to end the demo");
 

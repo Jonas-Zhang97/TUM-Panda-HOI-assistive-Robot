@@ -1,14 +1,8 @@
-#include <motion_control/robot.h>
-#include <std_msgs/Float64.h>
+#include <arm_motion/arm_motion.h>
 
-// bool RobotMotion::init()
-// {
-//     //
-//     return false;
-// }
-
-bool RobotMotion::hand_open()
+bool ArmMotion::hand_open()
 {
+    hand_group.setStartStateToCurrentState();
     hand_group.setNamedTarget("open");
 
     moveit::planning_interface::MoveGroupInterface::Plan hand_open;
@@ -21,13 +15,14 @@ bool RobotMotion::hand_open()
     }
     else
     {
-        hand_group.execute(hand_open);
+        hand_group.asyncExecute(hand_open);
         ROS_INFO_STREAM("Hand opened successfully");
-        return true;
     }
+
+    return true;
 }
 
-bool RobotMotion::hand_close_franka()
+bool ArmMotion::hand_close_franka()
 {
     const std::string Franka_IP = "10.162.83.121";
     franka::Gripper gripper(Franka_IP);
@@ -41,28 +36,31 @@ bool RobotMotion::hand_close_franka()
     return true;
 }
 
-bool RobotMotion::hand_close()
+bool ArmMotion::hand_close()
 {
-    // This is implementation using moveit classes
-    hand_group.setNamedTarget("close");
-
-    moveit::planning_interface::MoveGroupInterface::Plan hand_close;
-
-    bool hand_close_success = (hand_group.plan(hand_close) == moveit::core::MoveItErrorCode::SUCCESS);
-    if (!hand_close_success)
-    {
-        ROS_ERROR_STREAM("Unable to close the gripper");
-        return false;
-    }
-    else
-    {
-        hand_group.execute(hand_close);
+  // This is implementation using moveit classes
+  hand_group.setNamedTarget("close");
+  
+  moveit::planning_interface::MoveGroupInterface::Plan hand_close;
+  
+  bool hand_close_success = (hand_group.plan(hand_close) == moveit::core::MoveItErrorCode::SUCCESS);
+  if (!hand_close_success)
+  {
+      ROS_ERROR_STREAM("Unable to close the gripper");
+      return false;
+  }
+  else
+  {    
+        hand_group.asyncExecute();
+        // ros::Duration(0.01).sleep();
+        hand_group.stop();
         ROS_INFO_STREAM("Hand closed successfully");
-        return true;
     }
+
+    return true;
 }
 
-bool RobotMotion::homing()
+bool ArmMotion::homing()
 {
     arm_group.setNamedTarget("ready");
     moveit::planning_interface::MoveGroupInterface::Plan arm_ready;
@@ -77,20 +75,20 @@ bool RobotMotion::homing()
     {
         arm_group.execute(arm_ready);
         
-        RobotMotion robot_motion;
-        if(!robot_motion.hand_close())
+        if(!hand_close())
         {
             ROS_ERROR_STREAM("Arm homing successfully, but unable to close the gripper");
         }
         else
         {
             ROS_INFO_STREAM("Homing successfully");
-            return true;
         }
     }
+
+    return true;
 }
 
-bool RobotMotion::arm_to_target_pose(geometry_msgs::PoseStamped& pose)
+bool ArmMotion::arm_to_target_pose(geometry_msgs::PoseStamped& pose)
 {
     arm_group.setPoseTarget(pose);
     moveit::planning_interface::MoveGroupInterface::Plan to_target_pose;
@@ -105,6 +103,7 @@ bool RobotMotion::arm_to_target_pose(geometry_msgs::PoseStamped& pose)
     {
         ROS_INFO_STREAM("Path found, executing...");
         arm_group.execute(to_target_pose);
-        return true;
     }
+
+    return true;
 }

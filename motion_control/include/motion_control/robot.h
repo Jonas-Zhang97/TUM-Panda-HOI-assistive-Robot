@@ -6,6 +6,7 @@
 #include <moveit_visual_tools/moveit_visual_tools.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_msgs/Grasp.h>
+#include <franka_gripper/franka_gripper.h>
 
 class RobotMotion
 {
@@ -36,7 +37,9 @@ class RobotMotion
         /* Experimental features */
 
         // Using franka/Gripper class to close the gripper with certain force
-        // bool hand_close_franka();
+        bool hand_close_franka();
+
+        ros::NodeHandle nh;
         
         // Some public member value after the robot initialized, like move_group
         
