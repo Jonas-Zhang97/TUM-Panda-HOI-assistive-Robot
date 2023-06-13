@@ -19,7 +19,6 @@ tf2_eigen
 tf2_geometry_msgs
 franka_gripper
 std_msgs
-moveit_grasps
 )
 
 find_package(Eigen3 REQUIRED)
@@ -50,10 +49,16 @@ include_directories(
   ${Franka_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} src/arm_motion.cpp)
+add_library(grasp src/grasp.cpp)
+add_library(place src/place.cpp)
+add_library(common src/common.cpp)
 
-add_executable(${PROJECT_NAME}_node src/application/arm_motion_node.cpp)
+add_executable(grasp_node src/applications/grasp_node.cpp)
+add_executable(place_node src/applications/place_node.cpp)
 
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${Franka_LIBRARIES})
+target_link_libraries(grasp ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${Franka_LIBRARIES})
+target_link_libraries(place ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(common ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES} arm_motion)
+target_link_libraries(grasp_node ${catkin_LIBRARIES} grasp common)
+target_link_libraries(place_node ${catkin_LIBRARIES} place common)

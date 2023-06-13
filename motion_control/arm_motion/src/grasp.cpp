@@ -1,11 +1,6 @@
-#include <arm_motion/arm_motion.h>
+#include <arm_motion/grasp.h>
 
-void ArmMotion::init()
-{
-
-}
-
-bool ArmMotion::openHand()
+bool Grasp::openHand()
 {
   hand_group.setStartStateToCurrentState();
   hand_group.setNamedTarget("open");
@@ -25,7 +20,7 @@ bool ArmMotion::openHand()
   return true;
 }
 
-bool ArmMotion::closeHand()
+bool Grasp::closeHand()
 {
   // This is implementation using moveit API
   hand_group.setJointValueTarget(hand_group.getNamedTargetValues("close"));
@@ -44,7 +39,29 @@ bool ArmMotion::closeHand()
   return true;
 }
 
-bool ArmMotion::homing()
+void Grasp::grasp()
+{
+  grasp_client.waitForServer();
+    
+  goal.width = 0.03;
+  goal.speed = 0.01;
+  goal.force = 20;
+  goal.epsilon.inner = 0.05;
+  goal.epsilon.outer = 0.05;
+  
+  grasp_client.sendGoal(goal);
+
+  bool finished = grasp_client.waitForResult(ros::Duration(10.0));
+  actionlib::SimpleClientGoalState state = grasp_client.getState();
+  if (finished)
+  {
+    ROS_INFO("Grasp client finished with: %s", state.toString().c_str());
+  }
+
+  return true;
+}
+
+bool Grasp::homing()
 {
   arm_group.setNamedTarget("ready");
   moveit::planning_interface::MoveGroupInterface::Plan arm_plan;
