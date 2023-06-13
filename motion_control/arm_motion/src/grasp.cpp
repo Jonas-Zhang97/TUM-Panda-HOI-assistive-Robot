@@ -39,7 +39,7 @@ bool Grasp::closeHand()
   return true;
 }
 
-void Grasp::grasp()
+bool Grasp::grasp()
 {
   grasp_client.waitForServer();
     
@@ -81,3 +81,32 @@ bool Grasp::homing()
   return true;
 }
 
+void Grasp::init()
+{
+  target_object_pose_sub_ = nh_.subscribe("/target_object_pose", 1, &Grasp::GraspPoseCallback, this);
+
+  grasp_done_pub_ = nh_.advertise<std_msgs::Bool>("/grasp_done", 1);
+}
+
+/*
+void Grasp::update()
+{
+  if (has_target_object_)
+  {
+    preGraspApproach();
+    toGraspPose();
+
+    grasp();
+
+    grasp_done_.data = true;
+    grasp_done_pub_.publish(grasp_done);
+    has_target_object_ = false;
+  }
+}
+*/
+
+void Grasp::GraspPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+  grasp_pose_ = *msg;
+  has_target_object_ = true;
+}

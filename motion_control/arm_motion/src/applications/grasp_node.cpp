@@ -1,4 +1,5 @@
 #include <arm_motion/grasp.h>
+#include <arm_motion/common.h>
 
 int main(int argc, char** argv)
 {
