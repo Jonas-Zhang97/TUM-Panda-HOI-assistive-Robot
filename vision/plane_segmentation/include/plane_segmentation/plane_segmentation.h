@@ -1,5 +1,5 @@
-#ifndef PLANE_SEGMENTATION_CLASS_H
-#define PLANE_SEGMENTATION_CLASS_H
+#ifndef PLANE_SEGMENTATION_H
+#define PLANE_SEGMENTATION_H
 
 #include <ros/ros.h>
 #include <ros/console.h>
@@ -38,99 +38,41 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl_ros/impl/transforms.hpp>
 
-/**
- * @brief PlaneSegementation class, splits RGB-D pointclouds into table surface
- * and objects pointcloud. Publishes both new pointlcouds as ros topics
- * 
- */
 class PlaneSegmentation
 {
-public:
-  // pcl pointcloud types
-  typedef pcl::PointXYZRGB PointT;                // The Point Type
-  typedef pcl::PointCloud<PointT> PointCloud;     // The PointCloud Type
-  typedef PointCloud::Ptr CloudPtr;               // The PointCloud Pointer Type
+  public:
+    typedef pcl::PointXYZRGB PointT;                // The Point Type
+    typedef pcl::PointCloud<PointT> PointCloud;     // The PointCloud Type
+    typedef PointCloud::Ptr CloudPtr;               // The PointCloud Pointer Type
 
-public:
-  /**
-   * @brief Construct a new PlaneSegmentation object
-   * 
-   * @param pointcloud_topic topic of point cloud
-   * @param base_frame frame on the ground of the robot (to remove floor points)
-   */
-  PlaneSegmentation(const std::string &pointcloud_topic = "",
-                    const std::string &base_frame = "base_link");
+  private:
+    void preProcessCloud();
+    void segmentCloud();
+    void PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
 
-  /**
-   * @brief Destroy the Plane Segmentation object
-   * 
-   */
-  ~PlaneSegmentation();
+  public:
+    void init();
+    void update();
 
-  /**
-   * @brief initalize the all ros subsribers/publishers, member variables
-   * 
-   * @param nh 
-   * @return true success
-   * @return false failure
-   */
-  bool initalize(ros::NodeHandle &nh);
+  private:
+    std::string ref_frame_;
+    std::string point_cloud_topic_;
 
-  /**
-   * @brief called periodically, update the plane segmentation object
-   * 
-   * @param time current time
-   */
-  void update(const ros::Time &time);
+    ros::NodeHandle nh_;
 
-private:
-  /**
-   * @brief apply preprocessing to input cloud and return output cloud
-   * 
-   * @param input inital cloud
-   * @param output preprocessed cloud
-   * @return true success
-   * @return false failure
-   */
-  bool preProcessCloud(CloudPtr& input, CloudPtr& output);
+    ros::Subscriber point_cloud_sub_;
 
-  /**
-   * @brief segment the input cloud into plane and objects (remaining)
-   * 
-   * @param input input pointcloud
-   * @param plane_cloud pointcloud containing table
-   * @param objects_cloud pointcloud containing objects only
-   * @return true success
-   * @return false failure
-   */
-  bool segmentCloud(CloudPtr& input, CloudPtr& plane_cloud, CloudPtr& objects_cloud);
+    ros::Publisher plane_cloud_pub_;
+    ros::Publisher objects_cloud_pub_;
 
-private:
-  /**
-   * @brief callback function for new pointcloud subscriber
-   * 
-   * @param msg 
-   */
-  void cloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
+    CloudPtr raw_cloud_;                  //!< Inital raw point cloud
+    CloudPtr preprocessed_cloud_;         //!< after preprocessing
+    CloudPtr plane_cloud_;                //!< points of table surface
+    CloudPtr objects_cloud_;              //!< points of objects
+    
+    tf::TransformListener tfListener_;    //!< access ros tf tree to get frame transformations
 
-private:
-  bool is_cloud_updated_;             //!< new pointcloud recived
-  std::string base_frame_;            //!< robot base frame
-  std::string pointcloud_topic_;      //!< pointcloud topic name
-
-  ros::Subscriber point_cloud_sub_;   //!< Subscribers to the PointCloud data
-
-  ros::Publisher plane_cloud_pub_;    //!< Publish table point cloud
-  ros::Publisher objects_cloud_pub_;  //!< Publish objects point cloud
-
-  // internal pointclouds
-  CloudPtr raw_cloud_;                  //!< Inital raw point cloud
-  CloudPtr preprocessed_cloud_;         //!< after preprocessing
-  CloudPtr plane_cloud_;                //!< points of table surface
-  CloudPtr objects_cloud_;              //!< points of objects
-
-  // transformation
-  tf::TransformListener tfListener_;    //!< access ros tf tree to get frame transformations
+    bool updated_ = false;
 };
 
 #endif

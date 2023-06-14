@@ -65,7 +65,6 @@ class Grasp
   public:
     bool preGraspApproach();
     bool toGraspPose();
-
     bool grasp();
 
   private:
