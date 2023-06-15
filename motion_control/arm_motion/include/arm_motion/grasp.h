@@ -87,6 +87,8 @@ class Grasp
     bool has_target_object_;
 
     std_msgs::Bool grasp_done_;
+
+    geometry_msgs::PoseStamped pre_grasp_approach_;
 };
 
 #endif

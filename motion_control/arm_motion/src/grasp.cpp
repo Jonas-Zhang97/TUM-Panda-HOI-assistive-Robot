@@ -39,6 +39,14 @@ bool Grasp::closeHand()
   return true;
 }
 
+bool Grasp::preGraspApproach()
+{
+}
+
+bool Grasp::toGraspPose()
+{
+}
+
 bool Grasp::grasp()
 {
   grasp_client.waitForServer();
@@ -86,6 +94,8 @@ void Grasp::init()
   target_object_pose_sub_ = nh_.subscribe("/target_object_pose", 1, &Grasp::GraspPoseCallback, this);
 
   grasp_done_pub_ = nh_.advertise<std_msgs::Bool>("/grasp_done", 1);
+
+  arm_group.setPoseReferenceFrame("panda_link0");
 }
 
 /*

@@ -106,7 +106,7 @@ void PlaneSegmentation::init()
   point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 100, &PlaneSegmentation::PointCloudCallback, this);
 
   plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 100);
-  objects_cloud_pub_ = nh_.advertise<PointCloud>("/object_cloud", 100);
+  objects_cloud_pub_ = nh_.advertise<PointCloud>("/objects_cloud", 100);
 
   // Set pointers for pcl
   raw_cloud_.reset(new PointCloud);
