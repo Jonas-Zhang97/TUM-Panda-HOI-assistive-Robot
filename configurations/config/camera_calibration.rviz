@@ -6,8 +6,9 @@ Panels:
       Expanded:
         - /Axes3
         - /Image1
+        - /PointCloud21
       Splitter Ratio: 0.5
-    Tree Height: 720
+    Tree Height: 739
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -350,18 +351,18 @@ Visualization Manager:
       Move Group Namespace: ""
       Name: HandEyeCalibration
       Planning Scene Topic: move_group/monitored_planning_scene
-      Rx: 0
-      Ry: 0
-      Rz: 0
-      Tx: 0
-      Ty: 0
-      Tz: 0
+      Rx: 0.3579
+      Ry: 0.2855
+      Rz: -0.8739
+      Tx: 0.085
+      Ty: 0.8151
+      Tz: 0.7394
       Value: true
-      base: ""
-      camera_info_topic: ""
-      eef: ""
+      base: panda_link0
+      camera_info_topic: /camera/color/camera_info
+      eef: panda_hand_tcp
       group: panda_arm
-      image_topic: ""
+      image_topic: /camera/color/image_raw
       marker border (bits): 1
       marker separation (px): 20
       marker size (px): 100
@@ -369,8 +370,8 @@ Visualization Manager:
       markers, Y: 2
       measured marker size (m): 0.050000
       measured separation (m): 0.010000
-      object: ""
-      sensor: ""
+      object: handeye_target
+      sensor: camera_link
       sensor_mount_type: 0
       solver: crigroup/Daniilidis1999
       target_type: HandEyeTarget/Aruco
@@ -413,6 +414,34 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /camera/depth/color/points
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -429,7 +458,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2
+      Distance: 1.0554639101028442
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -437,17 +466,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.75
       Focal Point:
-        X: -0.10000000149011612
-        Y: 0.25
-        Z: 0.30000001192092896
+        X: 0.2818697392940521
+        Y: 0.20044700801372528
+        Z: 0.351463258266449
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.21000003814697266
+      Pitch: 0.4850003719329834
       Target Frame: panda_link0
-      Yaw: 5.524952411651611
+      Yaw: 0.8417683243751526
     Saved: ~
 Window Geometry:
   Displays:
@@ -465,7 +494,7 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000200000000000002b700000416fc0200000008fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000003d0000017d0000017d00fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a00560069006500770073000000010c000000a4000000a400fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000001c0000000ac0000004100fffffffb0000002600480061006e0064004500790065002000430061006c006900620072006100740069006f006e0100000272000001e1000001e100ffffff000000010000015600000416fc0200000003fb000000100044006900730070006c006100790073010000003d00000361000000c900fffffffb0000000a0049006d00610067006501000003a4000000af0000001600fffffffb0000000a0049006d00610067006500000003ce0000008500000000000000000000031f0000041600000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000002b700000416fc0200000008fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000003d000001880000017d00fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a00560069006500770073000000010c000000a4000000a400fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000001cb000000a10000004100fffffffb0000002600480061006e0064004500790065002000430061006c006900620072006100740069006f006e0100000272000001e1000001e100ffffff000000010000015600000416fc0200000003fb000000100044006900730070006c006100790073010000003d00000374000000c900fffffffb0000000a0049006d00610067006501000003b70000009c0000001600fffffffb0000000a0049006d00610067006500000003ce0000008500000000000000000000031f0000041600000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
   Views:

@@ -105,6 +105,7 @@ void PlaneSegmentation::init()
   // Set subscriber and publishers
   point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 100, &PlaneSegmentation::PointCloudCallback, this);
 
+  preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 100);
   plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 100);
   objects_cloud_pub_ = nh_.advertise<PointCloud>("/objects_cloud", 100);
 
@@ -124,6 +125,7 @@ void PlaneSegmentation::update()
     preProcessCloud();
     segmentCloud();
 
+    preprocessed_cloud_pub_.publish(*preprocessed_cloud_);
     plane_cloud_pub_.publish(*plane_cloud_);
     objects_cloud_pub_.publish(*objects_cloud_);
 
