@@ -2,7 +2,7 @@
 
 ## This project is still under developing
 
-## General Infomation
+## 1 General Infomation
 
 1. System: Ubuntu 20.04
 2. Kernel version: 5.9.1-rt20
@@ -10,7 +10,7 @@
 4. Camera: Intel Realsense Depth Camera D435i
 5. Robot: Franka Emika Panda
 
-## Pre-request
+## 2 Pre-request
 
 Please setup libfranka and realtim kernel first, you can follow the instruction [here](https://frankaemika.github.io/docs/installation_linux.html).
 
@@ -37,7 +37,7 @@ Once you are done with installation, you can continue to [download MoveIt source
 
 Now you should also clone the [darknet](https://github.com/leggedrobotics/darknet_ros) for object detection in the same workspace as before, you can also stop before building your workspace.
 
-## Download Source Code
+## 3 Download Source Code
 
 Before you start with this section, please make sure that the "panda_moveit_config" package is deleted, which could be downloaded in previous steps, we will use our own panda_moveit_config package.
 
@@ -50,7 +50,7 @@ cd ~/ws_project
 
 it is important to also put these packages in the same workspace as before.
 
-## Build the Workspace
+## 4 Build the Workspace
 
 Build the workspace as follows (this may take a while):
 
@@ -59,14 +59,34 @@ cd ~/ws_project
 catkin build -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=~/libfranka/build
 ```
 
-## Launch Files
+## 5 Launch Files
 
-1. You can create a customized .world file for Gazebo simulation by running:
+### 5.1 Gazebo Simulation
+
+   You can create a customized .world file for Gazebo simulation by running:
 
    ```bash
    roslaunch gazebo_sim edit_world.launch
    ```
 
-## Some Demos (TBD)
+### 5.2 Start demo
+
+If you have a robot and you want to perform our functionalities on it, go to the Franka Emika Desk, enable FCI and launch:
+
+```bash
+roslaunch panda_moveit_config franka_control.launch robot_ip:=10.162.83.121
+```
+
+replace the robot_ip with the ip of your robot.
+
+If you don't have access to any Panda arm, you can also simulate it in your custormized gazebo world.
+
+Spwan a virtual Panda arm in your gazebo world, and launch:
+
+```bash
+roslaunch panda_moveit_config demo.launch
+```
+
+## 6 Some Demos (TBD)
 
 Herem are some demos that you can run to get an overview of this project.
