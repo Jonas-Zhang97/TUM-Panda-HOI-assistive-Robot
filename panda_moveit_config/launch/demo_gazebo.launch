@@ -15,9 +15,7 @@
     <arg name="headless" value="$(eval not arg('gazebo_gui'))" />
     <arg name="use_gripper" default="$(arg load_gripper)" />
     <arg name="controller" default="$(arg transmission)_joint_trajectory_controller" />
-    <arg name="world" default="$(find gazebo_sim)/worlds/empty.world"/>
     <!-- Require the rviz configuration -->
-    <arg name="def_rviz_config" default="std_config_n_cam"/>
   </include>
 
   <include file="$(dirname)/demo.launch" pass_all_args="true">

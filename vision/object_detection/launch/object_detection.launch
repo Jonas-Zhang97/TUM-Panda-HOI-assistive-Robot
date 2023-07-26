@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <launch>
-  <!-- launch the camera-->
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch" pass_all_args="true">
-  <arg name="enable_pointcloud" default="true"/>
-  </include>
 
   <!-- Console launch prefix -->
   <arg name="launch_prefix" default=""/>
