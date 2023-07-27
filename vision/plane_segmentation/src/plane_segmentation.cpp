@@ -103,11 +103,11 @@ void PlaneSegmentation::init()
   point_cloud_topic_ = "/camera/depth/color/points";
   
   // Set subscriber and publishers
-  point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 100, &PlaneSegmentation::PointCloudCallback, this);
+  point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &PlaneSegmentation::PointCloudCallback, this);
 
-  preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 100);
-  plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 100);
-  objects_cloud_pub_ = nh_.advertise<PointCloud>("/objects_cloud", 100);
+  preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
+  plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);
+  objects_cloud_pub_ = nh_.advertise<PointCloud>("/objects_cloud", 1);
 
   // Set pointers for pcl
   raw_cloud_.reset(new PointCloud);
@@ -130,6 +130,8 @@ void PlaneSegmentation::update()
     objects_cloud_pub_.publish(*objects_cloud_);
 
     updated_ = false;
+
+    ros::Duration(10.0).sleep();
   }
 }
 
