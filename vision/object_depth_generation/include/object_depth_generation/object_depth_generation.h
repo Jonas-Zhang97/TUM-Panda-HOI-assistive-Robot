@@ -60,6 +60,9 @@ class ObjectDepthGeneration
     ros::Subscriber depth_image_sub_;
 
     ros::Publisher object_depth_pub_;
+
+  private: // variables to be initialized in init function
+    std::map<std::string, int> cv_type_map_;
   
   private: // callback functions
     void cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &msg);
@@ -68,15 +71,27 @@ class ObjectDepthGeneration
     void depthImageCallback(const sensor_msgs::ImageConstPtr &msg);
   
   private:
+    // For boundingBoxesCallback
     std::vector<cv::Rect> cv_bounding_boxes_;
     int boxes_num_;
+    bool has_boxes_;
 
+    // For depthImageCallback 
+    std_msgs::Header depth_image_header_;
     cv_bridge::CvImagePtr depth_image_ptr_;
     cv::Mat depth_matrix_;
-    std::vector<uint> depth_matrix_size_;
+    std::vector<int> depth_matrix_size_;
+    std::string depth_image_encoding_;
+    int cv_depth_type_;
+    bool has_image_;
 
   private:
     void objectDepthExtraction();
+    void fromMatToMsg();
+
+  private:
+    // for objectDepthExtraction
+    cv::Mat objects_extracted_mat_;
 };
 
 #endif
