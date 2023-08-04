@@ -6,7 +6,10 @@ int main(int argc, char** argv)
 
   ObjectDepthGeneration odg;
 
-  odg.init();
+  if (!odg.init())
+  {
+    return 0;
+  }
 
   ros::Rate loop_rate(10); 
 

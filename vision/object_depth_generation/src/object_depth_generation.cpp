@@ -3,7 +3,28 @@
 bool ObjectDepthGeneration::init()
 {
   bounding_box_topic = "/darknet_ros/bounding_boxes";
-  depth_image_topic = "/camera/aligned_depth_to_color/image_raw";
+
+  bool given_point_cloud;
+  bool given_depth_image;
+
+  nh_.getParam("/object_depth_generation_node/given_point_cloud", given_point_cloud);
+  nh_.getParam("/object_depth_generation_node/given_depth_image", given_depth_image);
+
+  ROS_INFO_STREAM("" << given_depth_image);
+
+  if (given_point_cloud)
+  {
+    depth_image_topic = "/noisy_object_depth_image";
+  }
+  else if (given_depth_image)
+  {
+    depth_image_topic = "/camera/aligned_depth_to_color/image_raw";
+  }
+  else
+  {
+    ROS_ERROR_STREAM("Please use the launch file and specify the input format");
+    return false;
+  }
 
   bounding_boxes_sub_ = nh_.subscribe<darknet_ros_msgs::BoundingBoxes>(bounding_box_topic, 1, &ObjectDepthGeneration::boundingBoxesCallback, this);
   depth_image_sub_ = nh_.subscribe<sensor_msgs::Image>(depth_image_topic, 1, &ObjectDepthGeneration::depthImageCallback, this);
