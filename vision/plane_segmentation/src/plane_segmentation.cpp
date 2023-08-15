@@ -12,20 +12,20 @@ void PlaneSegmentation::preProcessCloud()
 
   // Transform the point cloud to the ref_frame and store the result in transf_cloud
   CloudPtr transf_cloud(new PointCloud);
-  pcl_ros::transformPointCloud(ref_frame_, *ds_cloud, *transf_cloud, tfListener_);
+  pcl_ros::transformPointCloud(ref_frame_, *raw_cloud_, *transf_cloud, tfListener_);
 
   // Remove the point cloud above 0.4m to remove the robot gripper
   pcl::PassThrough<PointT> pass_through_z;
   pass_through_z.setInputCloud(transf_cloud);
   pass_through_z.setFilterFieldName("z");
-  pass_through_z.setFilterLimits(0.0, 0.4);
+  pass_through_z.setFilterLimits(0.0, 0.4);    // just for test
   pass_through_z.filter(*preprocessed_cloud_);
   
   // Filter the point cloud in y direction to remove the wall
   pcl::PassThrough<PointT> pass_through_x;
   pass_through_x.setInputCloud(preprocessed_cloud_);
   pass_through_x.setFilterFieldName("x");
-  pass_through_x.setFilterLimits(-0.5, 1.05);
+  pass_through_x.setFilterLimits(-0.5, 0.8);
   pass_through_x.filter(*preprocessed_cloud_);
   
   // Filter the point cloud in x direction to remove the other table
@@ -83,7 +83,7 @@ void PlaneSegmentation::segmentCloud()
   CloudPtr transf_cloud(new PointCloud);
   pcl::transformPointCloud(*objects_cloud_, *transf_cloud, T_plane_base);
 
-  // Filter everything directly below the table and above it (z > 0.01 && < 0.15)
+  // Filter everything directly below the table and above it (z > 0.02 && < 0.15)
   pcl::PassThrough<PointT> pass;
   pass.setInputCloud(transf_cloud);
   pass.setFilterFieldName("z");
@@ -97,17 +97,19 @@ void PlaneSegmentation::segmentCloud()
 
 void PlaneSegmentation::init()
 {
-  ROS_INFO_STREAM("Initializing: Plane Segmentation Node");
   // Set frame and topic name
   ref_frame_ = "panda_link0";
   point_cloud_topic_ = "/camera/depth/color/points";
   
   // Set subscriber and publishers
   point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &PlaneSegmentation::PointCloudCallback, this);
+  camera_info_sub_ = nh_.subscribe("/camera/depth/camera_info", 1, &PlaneSegmentation::cameraInfoCallback, this);
+  // bounding_box_sub_ = nh_.subscribe("/darknet_ros/bounding_boxes", 1, &PlaneSegmentation::boxCallback, this);
 
-  preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
-  plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);
-  objects_cloud_pub_ = nh_.advertise<PointCloud>("/objects_cloud", 1);
+  // preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
+  // plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);
+  objects_cloud_pub_ = nh_.advertise<PointCloud>("/hoi/objects_cloud", 1);
+  objects_depth_image_pub_ = nh_.advertise<sensor_msgs::Image>("/noisy_object_depth_image", 1);
 
   // Set pointers for pcl
   raw_cloud_.reset(new PointCloud);
@@ -125,13 +127,13 @@ void PlaneSegmentation::update()
     preProcessCloud();
     segmentCloud();
 
-    preprocessed_cloud_pub_.publish(*preprocessed_cloud_);
-    plane_cloud_pub_.publish(*plane_cloud_);
+    // preprocessed_cloud_pub_.publish(*preprocessed_cloud_);
+    // plane_cloud_pub_.publish(*plane_cloud_);
+    ROS_INFO_STREAM("Publishing object cloud");
     objects_cloud_pub_.publish(*objects_cloud_);
+    // objects_depth_image_pub_.publish(depth_image_);
 
     updated_ = false;
-
-    ros::Duration(10.0).sleep();
   }
 }
 
@@ -139,5 +141,33 @@ void PlaneSegmentation::PointCloudCallback(const sensor_msgs::PointCloud2ConstPt
 {
   updated_ = true;
 
+  point_cloud_frame_ = msg->header.frame_id;
+
   pcl::fromROSMsg(*msg, *raw_cloud_);
+}
+
+void PlaneSegmentation::cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &msg)
+{
+  // copy camera info
+  Eigen::Matrix3d K = Eigen::Matrix3d::Zero();
+
+  for(size_t i = 0; i < 9; ++i)
+  {
+    K(i) = msg->K[i];
+  }
+  K_ = K.transpose();
+
+  image_size_.resize(2);
+  image_size_ = {msg->height, msg->width};
+}
+
+void PlaneSegmentation::boxCallback(const darknet_ros_msgs::BoundingBoxesConstPtr &msg)
+{
+  std::vector<darknet_ros_msgs::BoundingBox> detections_;
+
+  for (const darknet_ros_msgs::BoundingBox& b_box : msg->bounding_boxes)
+  {
+    Eigen::Vector4d box(b_box.xmin, b_box.ymin, b_box.xmax, b_box.ymax);
+    boxes_.push_back(box);
+  }
 }

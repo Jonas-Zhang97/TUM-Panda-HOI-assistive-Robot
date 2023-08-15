@@ -8,16 +8,20 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   tf
+  tf_conversions
+  darknet_ros
 )
 
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES plane_segmentation
   CATKIN_DEPENDS cv_bridge image_geometry image_transport roscpp std_msgs tf
-#  DEPENDS system_lib
+  DEPENDS
+    EIGEN3
 )
 
 include_directories(
@@ -25,6 +29,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}

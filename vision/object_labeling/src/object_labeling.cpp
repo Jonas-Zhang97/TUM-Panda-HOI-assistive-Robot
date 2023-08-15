@@ -64,9 +64,9 @@ bool ObjectLabeling::labelObjects(CloudPtr& input, CloudPtrl& output)
   pcl::EuclideanClusterExtraction<PointT> ec;
   
   // General settings
-  ec.setClusterTolerance (0.1); // 10cm
+  ec.setClusterTolerance (0.05); // 10cm
   ec.setMinClusterSize (100);
-  ec.setMaxClusterSize (700);
+  ec.setMaxClusterSize (500);
 
   pcl::search::Search<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
   tree -> setInputCloud(input);

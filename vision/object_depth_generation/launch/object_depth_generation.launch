@@ -1,23 +1,10 @@
 <launch>
-  <arg name="input_type" default="depth_image"/>
+  <arg name="depth_image_topic"/>
 
-  <group if="$(eval input_type =='point_cloud')">
-    <node pkg="pcl_ros" type="convert_pointcloud_to_image" name="convert_pointcloud_to_image">
-      <remap from="input" to="/objects_cloud"/>
-      <remap from="output" to="/noisy_object_depth_image"/>
-    </node>
+  <node pkg="object_depth_generation" type="object_depth_generation_node" name="object_depth_generation_node" output="screen">
+    <param name="topic" value="$(arg depth_image_topic)"/>
+  </node>
 
-    <node pkg="object_depth_generation" type="object_depth_generation_node" name="object_depth_generation_node" output="screen">
-      <param name="given_point_cloud" value="true"/>
-      <param name="given_depth_image" value="false"/>
-    </node>
-  </group>
-
-  <group if="$(eval input_type=='depth_image')">
-    <node pkg="object_depth_generation" type="object_depth_generation_node" name="object_depth_generation_node" output="screen">
-      <param name="given_point_cloud" type="bool" value="false"/>
-      <param name="given_depth_image" type="bool" value="true"/>
-    </node>
-  </group>
+  <include file="$(find npy_generator)/launch/npy_generator.launch"/>
 
 </launch>

@@ -1,20 +1,20 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(npy_generator)
+project(grasp_pose_filter)
 
 find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
   rospy
-  sensor_msgs
-  cv_bridge
   std_msgs
-  hoi_msgs
+  tf
+  tf2_geometry_msgs
+  HOI_msgs
+  darknet_ros_msgs
 )
-
-find_package(OpenCV REQUIRED)
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES npy_generator
-#  CATKIN_DEPENDS rospy
+#  LIBRARIES grasp_pose_filter
+#  CATKIN_DEPENDS geometry_msgs rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -23,6 +23,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-catkin_install_python(PROGRAMS script/npy_generator.py
+catkin_install_python(PROGRAMS script/grasp_pose_filter.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

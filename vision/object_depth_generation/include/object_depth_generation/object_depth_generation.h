@@ -5,7 +5,11 @@
 
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Image.h>
-// #include <geometry_msgs/Point.h>
+
+#include <hoi_msgs/ImageBoxes.h>
+
+#include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/core/mat.hpp>
@@ -54,11 +58,14 @@ class ObjectDepthGeneration
 
   private: // node handle, subs and pubs
     ros::NodeHandle nh_;
+
     ros::Subscriber camera_info_sub_;
     ros::Subscriber bounding_boxes_sub_;
     ros::Subscriber object_cloud_sub_;
     ros::Subscriber depth_image_sub_;
+    ros::Subscriber target_name_sub_;
 
+    ros::Publisher image_boxes_pub_;
     ros::Publisher object_depth_pub_;
 
   private: // variables to be initialized in init function
@@ -69,12 +76,15 @@ class ObjectDepthGeneration
     void boundingBoxesCallback(const darknet_ros_msgs::BoundingBoxesConstPtr &msg);
     void objectCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
     void depthImageCallback(const sensor_msgs::ImageConstPtr &msg);
+    void targetNameCallback(const std_msgs::StringConstPtr &msg);
   
   private:
     // For boundingBoxesCallback
-    std::vector<cv::Rect> cv_bounding_boxes_;
+    darknet_ros_msgs::BoundingBoxes boxes_;
+    cv::Rect cv_bounding_box_;
     int boxes_num_;
     bool has_boxes_;
+    std::vector<std::string> detected_objects_;
 
     // For depthImageCallback 
     std_msgs::Header depth_image_header_;
@@ -85,13 +95,23 @@ class ObjectDepthGeneration
     int cv_depth_type_;
     bool has_image_;
 
+    // For commandCallback
+    std::string target_name_;
+    bool has_command_;
+
   private:
     void objectDepthExtraction();
     void fromMatToMsg();
+    void msgIntergration();
+    int boxSelection();
 
   private:
     // for objectDepthExtraction
     cv::Mat objects_extracted_mat_;
+
+    // for fromMatToMsg
+    sensor_msgs::Image objects_depth_image_;
+    hoi_msgs::ImageBoxes image_boxes_;
 };
 
 #endif
