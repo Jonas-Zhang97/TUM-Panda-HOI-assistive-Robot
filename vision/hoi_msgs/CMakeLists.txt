@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
 )
 
+find_package(Eigen3 REQUIRED)
+
 add_message_files(
   FILES
   ImageBoxes.msg

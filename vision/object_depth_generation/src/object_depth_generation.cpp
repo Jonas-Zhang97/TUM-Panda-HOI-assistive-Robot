@@ -8,6 +8,11 @@ bool ObjectDepthGeneration::init()
 
   nh_.getParam("/object_depth_generation_node/topic", input_image_topic);
 
+  if (input_image_topic == "/camera/depth/image_rect_raw")
+  {
+    ROS_ERROR_STREAM("please use depth image that is aligned to the color image");
+    return false;
+  }
 
   bounding_boxes_sub_ = nh_.subscribe<darknet_ros_msgs::BoundingBoxes>(bounding_box_topic, 1, &ObjectDepthGeneration::boundingBoxesCallback, this);
   depth_image_sub_ = nh_.subscribe<sensor_msgs::Image>(input_image_topic, 1, &ObjectDepthGeneration::depthImageCallback, this);

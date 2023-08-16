@@ -7,8 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   tf2_geometry_msgs
-  HOI_msgs
-  darknet_ros_msgs
+  hoi_msgs
 )
 
 catkin_package(
