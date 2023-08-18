@@ -9,6 +9,7 @@ import tf
 from tf.transformations import quaternion_from_matrix as matrix2quaternion
 from tf.transformations import quaternion_matrix as quaternion2matrix
 from tf.transformations import euler_from_quaternion as quaternion2euler
+from tf.transformations import quaternion_from_euler as euler2quaternion
 
 import numpy as np
 
@@ -25,6 +26,18 @@ class pose_talker:
     self.pose_pub = rospy.Publisher("/hoi/grasp_pose", PoseStamped, queue_size=1)
 
     rospy.loginfo("Ready to publish the grasp pose")
+
+  ### Define the quaternion multiplication
+  def quaternionMultiplication(self, q1, q2):
+    x1, y1, z1, w1 = q1
+    x2, y2, z2, w2 = q2
+    q_result = np.array([
+      w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+      w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+      w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
+      w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2])
+    
+    return q_result
 
   ### Functionalities of the codebase ###
   def resultLoader(self):
@@ -56,8 +69,15 @@ class pose_talker:
     
     T_grasp_base = np.matmul(T_cam_base, T_grasp_cam)
 
-    q_grasp_base = np.array(matrix2quaternion(T_grasp_base))
+    # cgn means that the quaternion is the direct output of contact graspnet
+    # to apply it on the robot, it should be rotated +90 degree around the z
+    # axis of panda_link0
+    q_grasp_base_cgn = np.array(matrix2quaternion(T_grasp_base))
     t_grasp_base = np.array([T_grasp_base[0, 3], T_grasp_base[1, 3], T_grasp_base[2, 3]])
+
+    q_to_fit_panda = np.array(euler2quaternion(0, 0, 1.57))
+
+    q_grasp_base = self.quaternionMultiplication(q_to_fit_panda, q_grasp_base_cgn)
 
     print(q_grasp_base)
     print(t_grasp_base)
