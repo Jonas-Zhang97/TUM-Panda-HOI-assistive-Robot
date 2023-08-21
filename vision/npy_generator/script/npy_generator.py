@@ -74,6 +74,7 @@ def main(args):
   png = pc_npy_generator()
 
   rospy.init_node("npy_generator_node", anonymous = True)
+  rospy.loginfo("Initialized: npy_generator")
   
   try:
     while not rospy.is_shutdown():

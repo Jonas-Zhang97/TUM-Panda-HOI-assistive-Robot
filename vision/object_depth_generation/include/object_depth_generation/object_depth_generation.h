@@ -48,7 +48,7 @@ class ObjectDepthGeneration
 
   public:
     bool init();        // initialize the subs and pubs
-    void update();      // call the process function and publish msgs
+    bool update();      // call the process function and publish msgs
 
   private: // topics
     std::string camera_info_topic;
@@ -80,7 +80,7 @@ class ObjectDepthGeneration
   
   private:
     // For boundingBoxesCallback
-    darknet_ros_msgs::BoundingBoxes boxes_;
+    std::vector<darknet_ros_msgs::BoundingBox> boxes_;
     cv::Rect cv_bounding_box_;
     int boxes_num_;
     bool has_boxes_;
@@ -88,7 +88,6 @@ class ObjectDepthGeneration
 
     // For depthImageCallback 
     std_msgs::Header depth_image_header_;
-    cv_bridge::CvImagePtr depth_image_ptr_;
     cv::Mat depth_matrix_;
     std::vector<int> depth_matrix_size_;
     std::string depth_image_encoding_;

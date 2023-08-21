@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   }
   else
   {
-    ROS_INFO_STREAM("Node initialized");
+    ROS_INFO_STREAM("Initialized: depth_image_converter_node");
   }
 
   ros::Rate loop_rate(1); 

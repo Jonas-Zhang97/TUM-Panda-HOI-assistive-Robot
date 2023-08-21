@@ -117,7 +117,7 @@ void PlaneSegmentation::init()
   plane_cloud_.reset(new PointCloud);
   objects_cloud_.reset(new PointCloud);
 
-  ROS_INFO_STREAM("Initialized: Plane Segmentation Node");
+  ROS_INFO_STREAM("Initialized: plane_segmentation_node");
 }
 
 void PlaneSegmentation::update()

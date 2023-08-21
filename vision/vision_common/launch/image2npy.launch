@@ -1,0 +1,5 @@
+<!-- This launch file converts depth image with all the objects into a npy file which contains only the desired object -->
+<launch>
+  <include file = "$(find object_depth_generation)/launch/object_depth_generation.launch"/>
+  <include file = "$(find npy_generator)/launch/npy_generator.launch"/>
+</launch>

@@ -1,0 +1,6 @@
+<launch>
+  <!-- For Testing -->
+  <!-- This launch file visualizes the generated grasp pose by publishing an axis -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="grasp_base_broadcaster"
+      args="0.40509945 0.0781215 0.34747782   0.99273341 0.11258529 -0.03744306 0.02007301 panda_link0 grasp_base" />
+</launch>

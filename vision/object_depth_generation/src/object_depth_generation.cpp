@@ -29,11 +29,15 @@ bool ObjectDepthGeneration::init()
   return true;
 }
 
-void ObjectDepthGeneration::update()
+bool ObjectDepthGeneration::update()
 {
   if (has_boxes_ && has_image_ && has_command_)
   {
-    boxSelection();
+    if (boxSelection() == -1)
+    {
+      ROS_WARN_STREAM("No object is detected");
+      return false;
+    }
     objectDepthExtraction();
     fromMatToMsg();
     
@@ -42,18 +46,23 @@ void ObjectDepthGeneration::update()
     has_image_ = false;
     has_command_ = false;
   }
+  return true;
 }
 
 int ObjectDepthGeneration::boxSelection()
 {
-  for (const darknet_ros_msgs::BoundingBox& b_box : boxes_.bounding_boxes)
+  if (boxes_.size() == 0)
   {
-    if (b_box.Class == target_name_)
+    return -1;
+  }
+  for (int i = 0; i < boxes_.size(); ++i)
+  {
+    if (boxes_[i].Class == target_name_)
     {
-      cv_bounding_box_.x = b_box.xmin;
-      cv_bounding_box_.y = b_box.ymin;
-      cv_bounding_box_.width = b_box.xmax-b_box.xmin;
-      cv_bounding_box_.height = b_box.ymax-b_box.ymin;
+      cv_bounding_box_.x = boxes_[i].xmin;
+      cv_bounding_box_.y = boxes_[i].ymin;
+      cv_bounding_box_.width = boxes_[i].xmax-boxes_[i].xmin;
+      cv_bounding_box_.height = boxes_[i].ymax-boxes_[i].ymin;
       ROS_INFO_STREAM("cv bounding box: " << cv_bounding_box_);
     }
   }
@@ -66,17 +75,11 @@ void ObjectDepthGeneration::objectDepthExtraction()
   objects_extracted_mat_.release();
   // create an empty mat
   objects_extracted_mat_.create(depth_matrix_size_[0], depth_matrix_size_[1], cv_depth_type_);
-  // ROS_INFO_STREAM("Size of the empty cv::Mat = " << objects_extracted_mat_.size);
-  
-  // store the sub mat of the objects in a std::vector
-  cv::Mat objects_sub_mat;
-  // select the object part from the original depth image
-  cv::Mat object_sub_mat = depth_matrix_(cv_bounding_box_).clone();
-  // ROS_INFO_STREAM("size of current sub mat: " << object_sub_mat.size);
-  // cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/sub_mat.jpg", object_sub_mat);
-  // ROS_INFO_STREAM("Number of sub mats: " << objects_sub_mat.size());
+  objects_extracted_mat_ = 0;
 
-  // replace cooresponding part in the newly created mat with object_sub_mat
+  ROS_INFO_STREAM("Size of the empty cv::Mat = " << objects_extracted_mat_.size);
+  cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/empty_mat.jpg", objects_extracted_mat_);
+  
   depth_matrix_(cv_bounding_box_).copyTo(objects_extracted_mat_(cv_bounding_box_));
   cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/object_extracted_mat.jpg", objects_extracted_mat_);
   ROS_INFO_STREAM("Image saved at /vision/doc/pics/test/object_extracted_mat.jpg");
@@ -100,7 +103,11 @@ void ObjectDepthGeneration::fromMatToMsg()
 
 void ObjectDepthGeneration::boundingBoxesCallback(const darknet_ros_msgs::BoundingBoxesConstPtr &msg)
 {
-  boxes_ = *msg;
+  boxes_.clear();
+  for (const darknet_ros_msgs::BoundingBox& b_box: msg->bounding_boxes)
+  {
+    boxes_.push_back(b_box);
+  }
   // convert bounding boxes to cv rectangle
 
   has_boxes_ = true;
@@ -108,13 +115,15 @@ void ObjectDepthGeneration::boundingBoxesCallback(const darknet_ros_msgs::Boundi
 
 void ObjectDepthGeneration::depthImageCallback(const sensor_msgs::ImageConstPtr &msg)
 {
+  depth_matrix_.release();
   // save the depth image as a matrix
   depth_image_header_ = msg->header;
 
   // ROS_INFO_STREAM(depth_image_header_);
 
-  depth_image_ptr_ = cv_bridge::toCvCopy(msg);
-  depth_matrix_ = depth_image_ptr_->image;
+  cv_bridge::CvImagePtr depth_image_ptr;
+  depth_image_ptr = cv_bridge::toCvCopy(msg);
+  depth_matrix_ = depth_image_ptr->image;
 
   depth_matrix_size_.resize(2);
   depth_matrix_size_ = {depth_matrix_.rows, depth_matrix_.cols};

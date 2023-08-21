@@ -1,0 +1,6 @@
+<!-- This launch file converts object point cloud to a depth image -->
+<!-- The generated depth map contains all the objects and undesired noise -->
+<launch>
+  <include file = "$(find plane_segmentation)/launch/plane_segmentation.launch"/>
+  <include file = "$(find depth_image_converter)/launch/depth_image_converter.launch"/>
+</launch>

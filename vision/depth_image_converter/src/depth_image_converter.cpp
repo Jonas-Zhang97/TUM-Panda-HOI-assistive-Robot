@@ -5,7 +5,7 @@ bool DepthImageConverter::init()
   // Initialize subscribers
   point_cloud_sub_ = nh_.subscribe("/hoi/objects_cloud", 1, &DepthImageConverter::pointCloudCallback, this);
   camera_info_sub_ = nh_.subscribe("/camera/color/camera_info", 1, &DepthImageConverter::cameraInfoCallback, this);
-  command_sub_ = nh_.subscribe("/hoi/convert_cloud_to_image", 1, &DepthImageConverter::commandCallback, this);
+  // command_sub_ = nh_.subscribe("/hoi/convert_cloud_to_image", 1, &DepthImageConverter::commandCallback, this);
 
   // Initialize publishers
   cloud_cam_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/hoi/test_topic", 1);

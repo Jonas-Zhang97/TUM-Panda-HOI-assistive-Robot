@@ -1,7 +1,7 @@
 import sys
 import rospy
 
-from geometry_msgs.msg import PoseStamped, Quaternion
+from geometry_msgs.msg import PoseStamped
 
 from std_msgs.msg import Bool
 
@@ -50,7 +50,6 @@ class pose_talker:
     # Find the transformation with highest score
     index_max_score = np.argmax(self.scores)
     T_grasp_cam = np.array(self.pred_grasps_cam[index_max_score])
-    q_grasp_cam = matrix2quaternion(T_grasp_cam)
 
     # Listen to the trasnformation of the camera_color_optical_frame w.r.t panda_link0
     listener = tf.TransformListener()
