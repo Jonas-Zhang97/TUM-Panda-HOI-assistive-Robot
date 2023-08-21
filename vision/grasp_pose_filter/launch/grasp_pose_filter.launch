@@ -1,0 +1,3 @@
+<launch>
+  <node name="grasp_pose_filter_node" pkg="grasp_pose_filter" type="grasp_pose_filter.py" output="screen"/>
+</launch>
