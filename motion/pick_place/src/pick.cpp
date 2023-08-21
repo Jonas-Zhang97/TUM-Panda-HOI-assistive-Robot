@@ -17,6 +17,9 @@ bool Pick::init()
   arm_group.setEndEffectorLink("panda_hand");
   arm_group.setPoseReferenceFrame("panda_link0");
 
+  const std::vector<double> open_value = {0.04, 0.04};
+  gripper_group.rememberJointValues("open_complete", open_value);
+
   return true;
 }
 
@@ -86,7 +89,7 @@ int Pick::openGripper()
 {
   ROS_INFO_STREAM("Opening the gripper");
   gripper_group.setStartStateToCurrentState();
-  gripper_group.setNamedTarget("open");
+  gripper_group.setNamedTarget("open_complete");
   
   bool success = (gripper_group.plan(gripper_plan_) == moveit::core::MoveItErrorCode::SUCCESS);
 
@@ -165,10 +168,10 @@ int Pick::closeGripper()
   grasp_client.waitForServer();
     
   goal.width = 0.005;
-  goal.speed = 0.01;
+  goal.speed = 0.1;
   goal.force = 20;
-  goal.epsilon.inner = 0.05;
-  goal.epsilon.outer = 0.05;
+  goal.epsilon.inner = 0.5;
+  goal.epsilon.outer = 0.5;
   
   grasp_client.sendGoal(goal);
 

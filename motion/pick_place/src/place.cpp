@@ -3,7 +3,7 @@
 bool Place::init()
 {
   ROS_INFO_STREAM("Initializing place node");
-  command_sub_ = nh_.subscribe("/hoi/place_object", 1, &Place::commandCallback, this);
+  command_sub_ = nh_.subscribe("/hoi/pick_done", 1, &Place::commandCallback, this);
 
   place_done_pub_ = nh_.advertise<std_msgs::Bool>("/hoi/place_done", 1);
 
@@ -15,6 +15,9 @@ bool Place::init()
   arm_group.setEndEffectorLink("panda_hand");
   arm_group.setPoseReferenceFrame("panda_link0");
 
+  const std::vector<double> open_value = {0.04, 0.04};
+  gripper_group.rememberJointValues("open_complete", open_value);
+
   has_command_ = false;
 
   return true;
@@ -24,6 +27,8 @@ void Place::update()
 {
   if (has_command_)
   {
+    ros::Duration(1.0).sleep();
+    
     // Add table collision model
     std::vector<double> table_pose = {0.50, 0.0, -0.01};
     std::vector<double> table_primitive = {1.0, 1.0, 0.02};
@@ -163,7 +168,7 @@ int Place::toPlacePose()
 int Place::openGripper()
 {
   gripper_group.setStartStateToCurrentState();
-  gripper_group.setNamedTarget("open");
+  gripper_group.setNamedTarget("open_complete");
 
   bool success = (gripper_group.plan(gripper_plan_) == moveit::core::MoveItErrorCode::SUCCESS);
   
@@ -183,9 +188,9 @@ int Place::postPlaceRetreat()
 {
   ROS_INFO_STREAM("Retreating to the post-pick pose");
   geometry_msgs::Pose post_retreat_goal;
-  post_retreat_goal.position.x = 0.3;
+  post_retreat_goal.position.x = 0.6;
   post_retreat_goal.position.y = 0;
-  post_retreat_goal.position.z = grasp_height_ + 0.4;
+  post_retreat_goal.position.z = grasp_height_ + 0.2;
   post_retreat_goal.orientation = curr_quaternion_;
   
   std::vector<geometry_msgs::Pose> waypoints;
