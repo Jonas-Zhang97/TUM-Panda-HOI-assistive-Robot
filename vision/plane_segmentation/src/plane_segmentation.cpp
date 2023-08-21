@@ -87,7 +87,7 @@ void PlaneSegmentation::segmentCloud()
   pcl::PassThrough<PointT> pass;
   pass.setInputCloud(transf_cloud);
   pass.setFilterFieldName("z");
-  pass.setFilterLimits(0.01, 0.3);
+  pass.setFilterLimits(0.05, 0.3);
   CloudPtr filterd_cloud(new PointCloud);
   pass.filter(*filterd_cloud);
 

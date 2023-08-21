@@ -4,8 +4,8 @@ import rospy
 
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
-from sensor_msgs.msg import PointCloud2
-from sensor_msgs import point_cloud2
+
+from std_msgs.msg import String
 
 # from hoi_msgs.msg import ImageBoxes
 
@@ -23,11 +23,13 @@ class di_npy_generator:
 
     self.cam_K = None
     self.depth = None
+    self.name = None
 
     self.command = False
 
     self.image_sub = rospy.Subscriber("/hoi/depth_image", Image, self.imageCallback)
     self.K_sub = rospy.Subscriber("/camera/aligned_depth_to_color/camera_info", CameraInfo, self.cameraInfoCallback)
+    self.name_sub = rospy.Subscriber("/hoi/target_object_name", String, self.nameCallback)
 
   def imageCallback(self, data):
     # convert to npy
@@ -47,6 +49,9 @@ class di_npy_generator:
   def cameraInfoCallback(self, data):
     self.cam_K = np.array(data.K).reshape([3, 3])
 
+  def nameCallback(self, data):
+    self.name = data.data
+
 ##### For Point Cloud #####
 
 class pc_npy_generator:
@@ -55,14 +60,14 @@ class pc_npy_generator:
     self.point = None
     # self.K = None
 
-    self.cloud_sub = rospy.Subscriber("/objects_cloud", PointCloud2, self.cloudCallback)
+    # self.cloud_sub = rospy.Subscriber("/objects_cloud", PointCloud2, self.cloudCallback)
     self.K_sub = rospy.Subscriber("/camera/depth/camera_info", CameraInfo, self.cameraInfoCallback)
 
-  def cloudCallback(self, data):
-    pc_data = point_cloud2.read_points(data, field_names=("x", "y", "z"), skip_nans=True)
-    points = np.array(list(pc_data))
-
-    self.point = points
+#   def cloudCallback(self, data):
+#     pc_data = point_cloud2.read_points(data, field_names=("x", "y", "z"), skip_nans=True)
+#     points = np.array(list(pc_data))
+# 
+#     self.point = points
 
   def cameraInfoCallback(self, data):
     self.cam_K = np.array(data.K).reshape([3, 3])
@@ -81,12 +86,21 @@ def main(args):
       if dng.depth is not None and dng.cam_K is not None:
         depth_data_dict = {"depth": dng.depth, "K": dng.cam_K}
         # Save the data dictionary to a .npy file
-        np.save("/home/franka/contact_graspnet/depth_image_data/data.npy", depth_data_dict)
+        
+        folder = "/home/franka/contact_graspnet/depth_image_data/"
+        file_name = dng.name
+        extension = ".npy"
+        path = folder+file_name+extension
+        
+        np.save(path, depth_data_dict)
 
-        rospy.loginfo("Depth image data saved to depth_image_data/data.npy")
+        info_header = "saved to: "
+        info_content = info_header + path
+        rospy.loginfo(info_content)
 
         # Clear data, avoid unnecessary looping
         dng.depth = None
+        dng.name = None
 
         rospy.sleep(1.0)
   except KeyboardInterrupt:

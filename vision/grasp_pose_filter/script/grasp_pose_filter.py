@@ -3,12 +3,12 @@ import rospy
 
 from geometry_msgs.msg import PoseStamped
 
-from std_msgs.msg import Bool
+from std_msgs.msg import String
 
 import tf
 from tf.transformations import quaternion_from_matrix as matrix2quaternion
 from tf.transformations import quaternion_matrix as quaternion2matrix
-from tf.transformations import euler_from_quaternion as quaternion2euler
+# from tf.transformations import euler_from_quaternion as quaternion2euler
 from tf.transformations import quaternion_from_euler as euler2quaternion
 
 import numpy as np
@@ -19,10 +19,12 @@ class pose_talker:
     self.pred_grasps_cam = None
     self.scores = None
     self.grasp_pose = None
+
     self.command = False
+    self.name = None
 
     # Initialize publisher
-    self.command_sub = rospy.Subscriber("/hoi/pick_target_object", Bool, self.commandCallback)
+    self.target_name_sub = rospy.Subscriber("/hoi/target_object", String, self.targetNameCallback)
     self.pose_pub = rospy.Publisher("/hoi/grasp_pose", PoseStamped, queue_size=1)
 
     rospy.loginfo("Ready to publish the grasp pose")
@@ -41,7 +43,11 @@ class pose_talker:
 
   ### Functionalities of the codebase ###
   def resultLoader(self):
-    output_data = np.load("/home/franka/contact_graspnet/results/predictions_data.npz", allow_pickle=True)
+    folder = "/home/franka/contact_graspnet/results/predictions_"
+    name = self.name
+    extension = ".npz"
+    path = folder + name + extension
+    output_data = np.load(path, allow_pickle=True)
     # Save the data as arrays
     self.pred_grasps_cam = output_data["pred_grasps_cam.npy"].item()[-1]
     self.scores = output_data["scores.npy"].item()[-1]
@@ -56,7 +62,7 @@ class pose_talker:
     try:
       listener.waitForTransform("panda_link0", "camera_color_optical_frame", rospy.Time.now(), rospy.Duration.from_sec(60))
       (t_cam_base, q_cam_base) = listener.lookupTransform("panda_link0", "camera_color_optical_frame", rospy.Time.now())
-      ang_cam_base = quaternion2euler(q_cam_base)
+      # ang_cam_base = quaternion2euler(q_cam_base)
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
       rospy.logwarn("can't get tf information")
     
@@ -90,8 +96,9 @@ class pose_talker:
     self.grasp_pose.pose.orientation.z = q_grasp_base[2]
     self.grasp_pose.pose.orientation.w = q_grasp_base[3]
   
-  def commandCallback(self, data):
-    self.command = data.data
+  def targetNameCallback(self, data):
+    self.name = data.data
+    self.command = True
 
 def main(args):
   pt = pose_talker()
@@ -110,6 +117,7 @@ def main(args):
 
       # Reset the flag
       pt.command = False
+      pt.name = None
 
 if __name__ == "__main__":
   main(sys.argv)
