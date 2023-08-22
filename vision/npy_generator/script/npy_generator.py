@@ -23,21 +23,23 @@ class di_npy_generator:
 
     self.cam_K = None
     self.depth = None
+    self.image = None
     self.name = None
 
     self.command = False
 
-    self.image_sub = rospy.Subscriber("/hoi/depth_image", Image, self.imageCallback)
+    self.depth_image_sub = rospy.Subscriber("/hoi/depth_image", Image, self.depthImageCallback)
+    self.rgb_image_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.rgbImageCallback)
     self.K_sub = rospy.Subscriber("/camera/aligned_depth_to_color/camera_info", CameraInfo, self.cameraInfoCallback)
     self.name_sub = rospy.Subscriber("/hoi/target_object_name", String, self.nameCallback)
 
-  def imageCallback(self, data):
+  def depthImageCallback(self, data):
     # convert to npy
     # depth_image = data.depth_image
     try:
       rospy.loginfo("Data received")
-      cv_image = self.bridge.imgmsg_to_cv2(data, "16UC1")
-      self.depth = np.multiply(cv_image, 10**(-3))     # size of the mat is: 720 x 1280
+      cv_depth_image = self.bridge.imgmsg_to_cv2(data, "16UC1")
+      self.depth = np.multiply(cv_depth_image, 10**(-3))     # size of the mat is: 720 x 1280
     except CvBridgeError as e:
       print("Recieved data type: ")
       print(type(data))
@@ -45,6 +47,15 @@ class di_npy_generator:
 
     # save to .npy file
     # np.save("/home/franka/contact_graspnet/depth_image_data/depth.npy", cv_image)
+  
+  def rgbImageCallback(self, data):
+    try:
+      cv_rgb_image = self.bridge.imgmsg_to_cv2(data, "8UC3")
+      self.image = cv_rgb_image
+    except CvBridgeError as e:
+      print("Recieved data type: ")
+      print(type(data))
+      rospy.logwarn("Unable to convert it to cv2")
 
   def cameraInfoCallback(self, data):
     self.cam_K = np.array(data.K).reshape([3, 3])
@@ -84,7 +95,7 @@ def main(args):
   try:
     while not rospy.is_shutdown():
       if dng.depth is not None and dng.cam_K is not None:
-        depth_data_dict = {"depth": dng.depth, "K": dng.cam_K}
+        depth_data_dict = {"depth": dng.depth, "K": dng.cam_K, "rgb": dng.image}
         # Save the data dictionary to a .npy file
         
         folder = "/home/franka/contact_graspnet/depth_image_data/"
@@ -100,6 +111,7 @@ def main(args):
 
         # Clear data, avoid unnecessary looping
         dng.depth = None
+        dng.image = None
         dng.name = None
 
         rospy.sleep(1.0)
