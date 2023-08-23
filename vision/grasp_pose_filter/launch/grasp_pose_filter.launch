@@ -1,3 +1,4 @@
 <launch>
+  <rosparam command="load" file="$(find vision_common)/config/path_setting.yaml"/>
   <node name="grasp_pose_filter_node" pkg="grasp_pose_filter" type="grasp_pose_filter.py" output="screen"/>
 </launch>

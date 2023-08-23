@@ -20,6 +20,8 @@ class pose_talker:
     self.scores = None
     self.grasp_pose = None
 
+    self.folder = None
+
     self.command = False
     self.name = None
 
@@ -43,10 +45,9 @@ class pose_talker:
 
   ### Functionalities of the codebase ###
   def resultLoader(self):
-    folder = "/home/franka/contact_graspnet/results/predictions_"
     name = self.name
     extension = ".npz"
-    path = folder + name + extension
+    path = self.folder + name + extension
     output_data = np.load(path, allow_pickle=True)
     # Save the data as arrays
     self.pred_grasps_cam = output_data["pred_grasps_cam.npy"].item()[-1]
@@ -104,6 +105,8 @@ def main(args):
   pt = pose_talker()
 
   rospy.init_node("grasp_pose_filter_node", anonymous = True)
+
+  pt.folder = rospy.get_param("results_path")
 
   while not rospy.is_shutdown():
     if pt.command:
