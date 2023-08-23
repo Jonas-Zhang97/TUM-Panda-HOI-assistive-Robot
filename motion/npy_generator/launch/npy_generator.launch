@@ -1,0 +1,6 @@
+<launch>
+    <rosparam command="load" file="$(find motion_common)/config/path_setting.yaml"/>
+    
+    <node name="npy_generator_node" pkg="npy_generator" type="npy_generator.py" output="screen">
+    </node>
+</launch>

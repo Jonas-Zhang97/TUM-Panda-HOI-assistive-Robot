@@ -1,0 +1,6 @@
+# To load:
+
+## This should be the results folder in your contact graspnet folder
+## "predictions_" at the end should not be modified
+
+results_path: "/home/zhihao/contact_graspnet/results/predictions_"
