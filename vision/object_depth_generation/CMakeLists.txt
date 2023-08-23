@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf_conversions
   cv_bridge
-  hoi_msgs
 )
 
 find_package(OpenCV REQUIRED)
@@ -29,7 +28,6 @@ catkin_package(
     sensor_msgs
     tf
     tf_conversions
-    hoi_msgs
 #  DEPENDS system_lib
 )
 
