@@ -8,7 +8,6 @@ bool DepthImageConverter::init()
   // command_sub_ = nh_.subscribe("/hoi/convert_cloud_to_image", 1, &DepthImageConverter::commandCallback, this);
 
   // Initialize publishers
-  cloud_cam_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/hoi/test_topic", 1);
   depth_image_pub_ = nh_.advertise<sensor_msgs::Image>("/hoi/image_from_cloud", 1);
 
   objects_cloud_.reset(new PointCloud);
@@ -56,14 +55,6 @@ int DepthImageConverter::cloudTransformation()
 
   // ROS_INFO_STREAM("number of points in objects_cloud_cam_ = " << objects_cloud_cam_->size());    // there is no points here!
   
-  // sensor_msgs::PointCloud2 objects_cloud_cam_msg;
-  // pcl::toROSMsg(*objects_cloud_cam_.get(), objects_cloud_cam_msg);
-
-  // objects_cloud_cam_msg.header.frame_id = "camera_color_optical_frame";    // If no set, will be assigned "panda_link0" as defult
-  // ROS_INFO_STREAM(objects_cloud_cam_msg.header.frame_id);
-  // ROS_INFO_STREAM("publishing objects cloud");
-  // cloud_cam_pub_.publish(objects_cloud_cam_msg);
-
   return 1;
 }
 
@@ -96,25 +87,12 @@ void DepthImageConverter::imageGenerator()
                                      curr_point_pixel_hom[1] / curr_point_pixel_hom[2]);
     // ROS_INFO_STREAM("curr_point_pixel = " << curr_point_pixel.transpose());
 
-    // if (curr_point_pixel[0] >= max_x)
-    // {
-    //   max_x = curr_point_pixel[0];
-    // }
-    // if (curr_point_pixel[0] <= min_x)
-    // {
-    //   min_x = curr_point_pixel[0];
-    // }
-    // It is correct up to this step
-
     // Justify, if this point is inside the range of depth image
     if (curr_point_pixel[1] /* y */ <= image_size_[0] /* rows */ && 
         curr_point_pixel[0] /* x */ <= image_size_[1] /* cols */ &&
         curr_point_pixel[1] >= 0 &&
         curr_point_pixel[0] >= 0)
     {
-      // int rows = std::round(curr_point_pixel[0]);
-      // int cols = std::round(curr_point_pixel[1]);
-      // If in, save the z-value to current position of the depth image
       depth_mat.at<ushort>(curr_point_pixel[1], curr_point_pixel[0]) = std::round(objects_cloud_cam_->at(i).z * std::pow(10, 3));
     }
     else
@@ -124,11 +102,6 @@ void DepthImageConverter::imageGenerator()
       continue;
     }
   }
-
-  // eigen2cv(depth_eigen, depth_mat);
-
-  // ROS_INFO_STREAM("max_x = " << max_x);
-  // ROS_INFO_STREAM("min_x = " << min_x);
 
   cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/depth_mat.jpg", depth_mat);
 
@@ -171,9 +144,4 @@ void DepthImageConverter::cameraInfoCallback(const sensor_msgs::CameraInfoConstP
   image_size_ = {msg->height, msg->width};
 
   has_K_ = true;
-}
-
-void DepthImageConverter::commandCallback(const std_msgs::BoolConstPtr &msg)
-{
-  command_ = msg->data;
 }

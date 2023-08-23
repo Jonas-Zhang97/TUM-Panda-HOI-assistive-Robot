@@ -53,7 +53,6 @@ class DepthImageConverter
     ros::Subscriber command_sub_;
 
     ros::Publisher depth_image_pub_;
-    ros::Publisher cloud_cam_pub_;
 
   private:  // Callbacks for subscribers
     void pointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg);
@@ -70,8 +69,6 @@ class DepthImageConverter
     Eigen::Matrix3d K_;
     std::vector<int> image_size_;
     bool has_K_ = false;
-    // For commandCallback
-    bool command_ = false;
 
   private:  // Main functionalities
     int cloudTransformation();  // Transform the point cloud to camera_color_optical_frame

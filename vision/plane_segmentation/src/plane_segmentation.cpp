@@ -103,13 +103,10 @@ void PlaneSegmentation::init()
   
   // Set subscriber and publishers
   point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &PlaneSegmentation::PointCloudCallback, this);
-  camera_info_sub_ = nh_.subscribe("/camera/depth/camera_info", 1, &PlaneSegmentation::cameraInfoCallback, this);
-  // bounding_box_sub_ = nh_.subscribe("/darknet_ros/bounding_boxes", 1, &PlaneSegmentation::boxCallback, this);
 
   // preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
   // plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);
   objects_cloud_pub_ = nh_.advertise<PointCloud>("/hoi/objects_cloud", 1);
-  objects_depth_image_pub_ = nh_.advertise<sensor_msgs::Image>("/noisy_object_depth_image", 1);
 
   // Set pointers for pcl
   raw_cloud_.reset(new PointCloud);
@@ -131,7 +128,6 @@ void PlaneSegmentation::update()
     // plane_cloud_pub_.publish(*plane_cloud_);
     ROS_INFO_STREAM("Publishing object cloud");
     objects_cloud_pub_.publish(*objects_cloud_);
-    // objects_depth_image_pub_.publish(depth_image_);
 
     updated_ = false;
   }
@@ -144,30 +140,4 @@ void PlaneSegmentation::PointCloudCallback(const sensor_msgs::PointCloud2ConstPt
   point_cloud_frame_ = msg->header.frame_id;
 
   pcl::fromROSMsg(*msg, *raw_cloud_);
-}
-
-void PlaneSegmentation::cameraInfoCallback(const sensor_msgs::CameraInfoConstPtr &msg)
-{
-  // copy camera info
-  Eigen::Matrix3d K = Eigen::Matrix3d::Zero();
-
-  for(size_t i = 0; i < 9; ++i)
-  {
-    K(i) = msg->K[i];
-  }
-  K_ = K.transpose();
-
-  image_size_.resize(2);
-  image_size_ = {msg->height, msg->width};
-}
-
-void PlaneSegmentation::boxCallback(const darknet_ros_msgs::BoundingBoxesConstPtr &msg)
-{
-  std::vector<darknet_ros_msgs::BoundingBox> detections_;
-
-  for (const darknet_ros_msgs::BoundingBox& b_box : msg->bounding_boxes)
-  {
-    Eigen::Vector4d box(b_box.xmin, b_box.ymin, b_box.xmax, b_box.ymax);
-    boxes_.push_back(box);
-  }
 }
