@@ -63,42 +63,23 @@ class di_npy_generator:
   def nameCallback(self, data):
     self.name = data.data
 
-##### For Point Cloud #####
-
-class pc_npy_generator:
-
-  def __init__(self):
-    self.point = None
-    # self.K = None
-
-    # self.cloud_sub = rospy.Subscriber("/objects_cloud", PointCloud2, self.cloudCallback)
-    self.K_sub = rospy.Subscriber("/camera/depth/camera_info", CameraInfo, self.cameraInfoCallback)
-
-#   def cloudCallback(self, data):
-#     pc_data = point_cloud2.read_points(data, field_names=("x", "y", "z"), skip_nans=True)
-#     points = np.array(list(pc_data))
-# 
-#     self.point = points
-
-  def cameraInfoCallback(self, data):
-    self.cam_K = np.array(data.K).reshape([3, 3])
-
 ##### Main Function #####
 
 def main(args):
   dng = di_npy_generator()
-  png = pc_npy_generator()
 
   rospy.init_node("npy_generator_node", anonymous = True)
   rospy.loginfo("Initialized: npy_generator")
+
+  folder = rospy.get_param('npy_path')
+  rospy.loginfo(".npy path: %s", folder)
   
   try:
     while not rospy.is_shutdown():
       if dng.depth is not None and dng.cam_K is not None:
         depth_data_dict = {"depth": dng.depth, "K": dng.cam_K, "rgb": dng.image}
-        # Save the data dictionary to a .npy file
         
-        folder = "/home/franka/contact_graspnet/depth_image_data/"
+        # Save the data dictionary to a .npy file
         file_name = dng.name
         extension = ".npy"
         path = folder+file_name+extension
@@ -117,19 +98,6 @@ def main(args):
         rospy.sleep(1.0)
   except KeyboardInterrupt:
     rospy.loginfo("shut down")
-
-#  try:
-#    while not rospy.is_shutdown() and png.command:
-#      if png.point is not None and png.cam_K is not None:
-#        point_data_dict = {"xzy": png.point, "K": png.cam_K}
-#        # Save the data dictionary to a .npy file
-#        np.save("/home/franka/contact_graspnet/point_cloud_data/data.npy", point_data_dict)
-#
-#        rospy.loginfo("Point cloud data saved to point_cloud_data/data.npy")
-#
-#        rospy.sleep(1.0)
-#  except KeyboardInterrupt:
-#    rospy.loginfo("shut down")
 
 if __name__ == "__main__":
   main(sys.argv)

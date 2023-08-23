@@ -7,6 +7,9 @@ bool ObjectDepthGeneration::init()
   std::string input_image_topic;
 
   nh_.getParam("/object_depth_generation_node/topic", input_image_topic);
+  nh_.getParam("image_path", image_save_path_);
+
+  // ROS_INFO_STREAM(image_save_path_);
 
   if (input_image_topic == "/camera/depth/image_rect_raw")
   {
@@ -78,10 +81,14 @@ void ObjectDepthGeneration::objectDepthExtraction()
   objects_extracted_mat_ = 0;
 
   ROS_INFO_STREAM("Size of the empty cv::Mat = " << objects_extracted_mat_.size);
-  cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/empty_mat.jpg", objects_extracted_mat_);
+  std::string empty_mat_path;
+  empty_mat_path = image_save_path_.append("empty_mat.jpg");
+  cv::imwrite(empty_mat_path, objects_extracted_mat_);
   
   depth_matrix_(cv_bounding_box_).copyTo(objects_extracted_mat_(cv_bounding_box_));
-  cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/object_extracted_mat.jpg", objects_extracted_mat_);
+  std::string depth_mat_path;
+  depth_mat_path = image_save_path_.append("object_extracted_mat.jpg");
+  cv::imwrite(depth_mat_path, objects_extracted_mat_);
   ROS_INFO_STREAM("Image saved at /vision/doc/pics/test/object_extracted_mat.jpg");
 }
 

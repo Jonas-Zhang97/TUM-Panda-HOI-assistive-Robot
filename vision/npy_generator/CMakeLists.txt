@@ -6,7 +6,6 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   cv_bridge
   std_msgs
-  hoi_msgs
 )
 
 find_package(OpenCV REQUIRED)

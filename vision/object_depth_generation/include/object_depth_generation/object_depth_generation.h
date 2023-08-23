@@ -6,8 +6,6 @@
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/Image.h>
 
-#include <hoi_msgs/ImageBoxes.h>
-
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 
@@ -55,6 +53,8 @@ class ObjectDepthGeneration
     std::string bounding_box_topic;
     std::string object_cloud_topic;
     std::string depth_image_topic;
+
+    std::string image_save_path_;
 
   private: // node handle, subs and pubs
     ros::NodeHandle nh_;
@@ -110,7 +110,6 @@ class ObjectDepthGeneration
 
     // for fromMatToMsg
     sensor_msgs::Image objects_depth_image_;
-    hoi_msgs::ImageBoxes image_boxes_;
 };
 
 #endif
