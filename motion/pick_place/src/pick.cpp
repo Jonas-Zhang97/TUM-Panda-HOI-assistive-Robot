@@ -116,7 +116,7 @@ int Pick::prePickApproach()
   // Get the pre-pick goal
   geometry_msgs::PoseStamped pre_approach_goal = target_pose_;
   pre_approach_goal.header.frame_id = "panda_link0";
-  pre_approach_goal.pose.position.z += 0.2;
+  pre_approach_goal.pose.position.z += 0.1;
 
   arm_group.setStartStateToCurrentState();
   arm_group.setPoseTarget(pre_approach_goal);
@@ -194,7 +194,7 @@ int Pick::postPickRetreat()
 {
   ROS_INFO_STREAM("Retreating to the post-pick pose");
   geometry_msgs::Pose post_retreat_goal = target_pose_.pose;
-  post_retreat_goal.position.z += 0.4;
+  post_retreat_goal.position.z += 0.1;
   
   std::vector<geometry_msgs::Pose> waypoints;
   waypoints.push_back(post_retreat_goal);
