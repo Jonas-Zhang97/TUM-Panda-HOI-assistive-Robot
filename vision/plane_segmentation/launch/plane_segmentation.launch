@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
+
+  <rosparam command="load" file="$(find vision_common)/config/settings.yaml"/>
   
   <node name="plane_segmentation_node" pkg="plane_segmentation" type="plane_segmentation_node" output="screen"/>
 

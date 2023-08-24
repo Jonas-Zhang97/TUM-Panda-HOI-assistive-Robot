@@ -2,9 +2,12 @@
 
 bool DepthImageConverter::init()
 {
+  std::string camera_info_topic;
+  nh_.getParam("camera_info_topic", camera_info_topic);
+
   // Initialize subscribers
   point_cloud_sub_ = nh_.subscribe("/hoi/objects_cloud", 1, &DepthImageConverter::pointCloudCallback, this);
-  camera_info_sub_ = nh_.subscribe("/camera/color/camera_info", 1, &DepthImageConverter::cameraInfoCallback, this);
+  camera_info_sub_ = nh_.subscribe(camera_info_topic, 1, &DepthImageConverter::cameraInfoCallback, this);
   // command_sub_ = nh_.subscribe("/hoi/convert_cloud_to_image", 1, &DepthImageConverter::commandCallback, this);
 
   // Initialize publishers

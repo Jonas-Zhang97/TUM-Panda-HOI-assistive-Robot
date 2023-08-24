@@ -99,10 +99,12 @@ void PlaneSegmentation::init()
 {
   // Set frame and topic name
   ref_frame_ = "panda_link0";
-  point_cloud_topic_ = "/camera/depth/color/points";
+  
+  std::string point_cloud_topic;
+  nh_.getParam("point_cloud_topic", point_cloud_topic);
   
   // Set subscriber and publishers
-  point_cloud_sub_ = nh_.subscribe(point_cloud_topic_, 1, &PlaneSegmentation::PointCloudCallback, this);
+  point_cloud_sub_ = nh_.subscribe(point_cloud_topic, 1, &PlaneSegmentation::PointCloudCallback, this);
 
   // preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
   // plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);

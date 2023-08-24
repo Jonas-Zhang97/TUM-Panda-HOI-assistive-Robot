@@ -48,16 +48,18 @@ The result of box:
 
 ### Bottle
 
-The results of bottle are very unstable, from time to time the contact graspnet gave good result:
+The stability of the results pertaining to bottles is proving to be inconsistent and uncertain.
 
-![image](pics/contact_graspnet_results/BottleGrasp.png)
-
-It also cloud be the case that the generated poses are on the noise:
+One possible explanation for this instability is the likelihood that the generated poses are susceptible to noise interference:
 
 ![image](pics/contact_graspnet_results/BottleGraspNoisy.png)
 
+In the most recent testing phase, a notable observation has emerged. The quality of the generated grasp poses appears to exhibit a strong correlation with the position of the target object. This phenomenon is particularly evident in the image below, which portrays the grasp candidates in a scenario where the bottle was positioned at the middle line of the view field of the camera:
+
+![image](pics/contact_graspnet_results/BottleGrasp_success.png)
+
 ### Bowl
 
-Because of the noise of realsense camera, the point cloud of the bowl is somehow "planed", and therefore no grasp candidate is generated.
+Due to the inherent noise associated with the realsense camera's data, the point cloud corresponding to the bowl object has undergone a form of inadvertent "flattening," leading to a situation where no viable grasp candidates are being generated. This can be attributed to the distortion introduced by the noise, which has resulted in the inability to discern meaningful grasp positions for the bowl object.
 
 ![image](pics/contact_graspnet_results/BowlGraspRGB.png)

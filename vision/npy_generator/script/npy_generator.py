@@ -28,6 +28,11 @@ class di_npy_generator:
 
     self.command = False
 
+    rgb_image_topic = rospy.get_param("rgb_image_topic")
+    print(rgb_image_topic)
+    camera_info_topic = rospy.get_param("camera_info_topic")
+    print(camera_info_topic)
+
     self.depth_image_sub = rospy.Subscriber("/hoi/depth_image", Image, self.depthImageCallback)
     self.rgb_image_sub = rospy.Subscriber("/camera/color/image_raw", Image, self.rgbImageCallback)
     self.K_sub = rospy.Subscriber("/camera/aligned_depth_to_color/camera_info", CameraInfo, self.cameraInfoCallback)
@@ -66,10 +71,11 @@ class di_npy_generator:
 ##### Main Function #####
 
 def main(args):
-  dng = di_npy_generator()
 
   rospy.init_node("npy_generator_node", anonymous = True)
   rospy.loginfo("Initialized: npy_generator")
+
+  dng = di_npy_generator()
 
   folder = rospy.get_param('npy_path')
   rospy.loginfo(".npy path: %s", folder)

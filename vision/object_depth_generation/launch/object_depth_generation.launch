@@ -1,7 +1,7 @@
 <launch>
   <arg name="depth_image_topic" default="/hoi/image_from_cloud"/>
 
-  <rosparam command="load" file="$(find vision_common)/config/path_setting.yaml"/>
+  <rosparam command="load" file="$(find vision_common)/config/settings.yaml"/>
 
   <node pkg="object_depth_generation" type="object_depth_generation_node" name="object_depth_generation_node" output="screen">
     <param name="topic" value="$(arg depth_image_topic)"/>

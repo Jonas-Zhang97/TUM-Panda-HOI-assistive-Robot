@@ -1,3 +1,4 @@
 <launch>
+    <rosparam command="load" file="$(find vision_common)/config/settings.yaml"/>
     <node pkg="depth_image_converter" type="depth_image_converter_node" name="depth_image_converter_node" output="screen"/>
 </launch>
