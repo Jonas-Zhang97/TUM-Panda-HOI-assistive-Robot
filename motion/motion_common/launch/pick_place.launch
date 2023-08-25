@@ -1,4 +1,4 @@
 <launch>
-  <include file="$(find npy_generator)/launch/npy_generator.launch"/>
+  <include file="$(find grasp_pose_filter)/launch/grasp_pose_filter.launch"/>
   <include file="$(find pick_place)/launch/pick_place.launch"/>
 </launch>
