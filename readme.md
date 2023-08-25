@@ -85,7 +85,13 @@ roslaunch panda_moveit_config franka_control.launch robot_ip:=<fci_ip>
 
 in the second one, launch the camera pose tf talker, you should generate your own tf talker by perform a camera calibration procedure.
 
-On the computer to perform calculations, open 3 terminals, in the first one, launch the object detection:
+The camera tf talker during the development can be launched with:
+
+```bash
+roslaunch common camera_pose.launch
+```
+
+On the computer for calculations, open 3 terminals, in the first one, launch the object detection:
 
 ```bash
 roslaunch object_detection object_detection.launch
