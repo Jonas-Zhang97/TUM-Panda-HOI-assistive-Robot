@@ -21,14 +21,14 @@ void PlaneSegmentation::preProcessCloud()
   pass_through_z.setFilterLimits(0.0, 0.4);    // just for test
   pass_through_z.filter(*preprocessed_cloud_);
   
-  // Filter the point cloud in y direction to remove the wall
+  // Filter the point cloud in x direction to remove the wall
   pcl::PassThrough<PointT> pass_through_x;
   pass_through_x.setInputCloud(preprocessed_cloud_);
   pass_through_x.setFilterFieldName("x");
   pass_through_x.setFilterLimits(-0.5, 0.8);
   pass_through_x.filter(*preprocessed_cloud_);
   
-  // Filter the point cloud in x direction to remove the other table
+  // Filter the point cloud in y direction to remove the other table
   pcl::PassThrough<PointT> pass_through_y;
   pass_through_y.setInputCloud(preprocessed_cloud_);
   pass_through_y.setFilterFieldName("y");
@@ -44,7 +44,9 @@ void PlaneSegmentation::segmentCloud()
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
 
   seg.setOptimizeCoefficients(true);
-  seg.setModelType(pcl::SACMODEL_PLANE);
+  Eigen::Vector3f sac_axis(0.0, 0.0, 1.0);
+  seg.setAxis(sac_axis);
+  seg.setModelType(pcl::SACMODEL_PARALLEL_PLANE);
   seg.setMethodType(pcl::SAC_RANSAC);
   seg.setMaxIterations(100);
   seg.setDistanceThreshold(0.01);

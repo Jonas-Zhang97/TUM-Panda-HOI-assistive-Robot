@@ -2,7 +2,7 @@
 <package format="2">
   <name>depth_image_converter</name>
   <version>0.0.0</version>
-  <description>The package converts point cloud to depth image</description>
+  <description>The package converts objects point cloud to depth image</description>
 
   <maintainer email="yueyang.zhang@tum.de">Yueyang Zhang</maintainer>
 
