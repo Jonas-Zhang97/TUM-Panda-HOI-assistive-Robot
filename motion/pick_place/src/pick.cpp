@@ -12,8 +12,8 @@ bool Pick::init()
   // Initialize the move_group
   arm_group.setPlannerId("RRTConnectkConfigDefault");
   arm_group.setPlanningTime(30.0);
-  arm_group.setMaxAccelerationScalingFactor(0.3);
-  arm_group.setMaxVelocityScalingFactor(0.3);
+  arm_group.setMaxAccelerationScalingFactor(0.1);
+  arm_group.setMaxVelocityScalingFactor(0.1);
   arm_group.setEndEffectorLink("panda_hand");
   arm_group.setPoseReferenceFrame("panda_link0");
 
