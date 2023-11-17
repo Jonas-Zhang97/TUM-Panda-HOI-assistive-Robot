@@ -64,26 +64,36 @@ bool Place::place()
   {
     return false;
   }
+
+  visual_tools.prompt("press 'next' to continue.");
   
   if (toPlacePose() == -1)
   {
     return false;
   }
 
+  visual_tools.prompt("press 'next' to continue.");
+
   if (openGripper() == -1)
   {
     return false;
   }
+
+  visual_tools.prompt("press 'next' to continue.");
 
   if (postPlaceRetreat() == -1)
   {
     return false;
   }
 
+  visual_tools.prompt("press 'next' to continue.");
+
   if (homing() == -1)
   {
     return false;
   }
+
+  visual_tools.prompt("press 'next' to the next loop.");
 
   return true;
 }
