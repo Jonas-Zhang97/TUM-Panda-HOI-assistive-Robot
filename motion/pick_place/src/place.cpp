@@ -5,7 +5,7 @@
 bool Place::init()
 {
   command_sub_ = nh_.subscribe("/hoi/pick_done", 1, &Place::commandCallback, this);
-
+  pose_sub_ = nh_.subscribe("/hoi/grasp_pose", 1, &Place::poseCallback, this)
   place_done_pub_ = nh_.advertise<std_msgs::Bool>("/hoi/place_done", 1);
 
   // Initialize the move_group
@@ -285,6 +285,11 @@ void Place::removeObject(const std::string &name)
   PSI_.removeCollisionObjects(to_be_removed);
 }
 
+void Place::poseCallback(const geometry_msgs::PoseStamped::ConstPtr &msg)
+{
+  grasp_orientation_ = msg->pose.orientation
+  grasp_height_ = msg->pose.position.z
+}
 
 void Place::commandCallback(const std_msgs::BoolConstPtr &msg)
 {

@@ -1,5 +1,7 @@
 #include <pick_place/pick.h>
 
+// TODO: add padding according to grasp pose
+
 bool Pick::init()
 {
   // Initialize flag
@@ -17,7 +19,7 @@ bool Pick::init()
   arm_group.setEndEffectorLink("panda_hand");
   arm_group.setPoseReferenceFrame("panda_link0");
 
-  const std::vector<double> open_value = {0.04, 0.04};
+  const std::vector<double> open_value = {0.035, 0.035};
   gripper_group.rememberJointValues("open_complete", open_value);
 
   return true;

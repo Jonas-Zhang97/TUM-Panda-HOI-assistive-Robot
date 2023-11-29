@@ -86,10 +86,21 @@ class pose_talker:
 
       T_grasp_base = np.matmul(T_cam_base, T_grasp_cam)
 
+      # Calculate the angle between gripper orientation and table plane normal
+      z_grasp = T_grasp_base[:3, 2]
+      angle = np.arccos(z_grasp[2] / np.linalg.norm(z_grasp, ord=2))
+
+      tip_height = 0.10 * np.cos(angle)
+
+      # TODO: specifiy some extra filter for some objects 
       if T_grasp_base[2, 3] > 0.1:
-        break
+        if angle > 2.35:
+          break
+        else:
+          rospy.logwarn("gripper z orientation value: %s, current is the %s try, searching for the next pose", angle, i+1)
+          self.scores = np.delete(self.scores, index_max_score)
       else:
-        rospy.logwarn("The pose with %s. highest confidence is with z-axis value: %s, which is under threshold, searching for the next pose", i + 1, T_grasp_base[2, 3])
+        rospy.logwarn("pose height: %s, current is the %s try, searching for the next pose", tip_height, i+1)
         self.scores = np.delete(self.scores, index_max_score)
 
 
