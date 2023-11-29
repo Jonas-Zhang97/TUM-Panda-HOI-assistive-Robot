@@ -13,6 +13,7 @@ from tf.transformations import quaternion_from_euler as euler2quaternion
 
 import numpy as np
 
+# TODO: Filter the grasp poses again with z-axis value, for that it doesn't make scense if the pose is to low
 class pose_talker:
   def __init__(self):
     # Read the output of the contact graspnet
@@ -48,10 +49,17 @@ class pose_talker:
     name = self.name
     extension = ".npz"
     path = self.folder + name + extension
-    output_data = np.load(path, allow_pickle=True)
-    # Save the data as arrays
-    self.pred_grasps_cam = output_data["pred_grasps_cam.npy"].item()[-1]
-    self.scores = output_data["scores.npy"].item()[-1]
+    try:
+      output_data = np.load(path, allow_pickle=True)
+      
+      self.pred_grasps_cam = output_data["pred_grasps_cam.npy"].item()[-1]
+      self.scores = output_data["scores.npy"].item()[-1]
+      return True
+    
+    except:
+      rospy.logerr("Grasping candidates for the object specified by the name '%s' not found, try another one", self.name)
+      return False
+    
 
   def poseGenerator(self):     # Generate the grasp pose as a PoseStamped object
     # Find the transformation with highest score
@@ -61,8 +69,10 @@ class pose_talker:
     # Listen to the trasnformation of the camera_color_optical_frame w.r.t panda_link0
     listener = tf.TransformListener()
     try:
+      rospy.loginfo("listening to the transformation 'camera->base'")
       listener.waitForTransform("panda_link0", "camera_color_optical_frame", rospy.Time.now(), rospy.Duration.from_sec(60))
       (t_cam_base, q_cam_base) = listener.lookupTransform("panda_link0", "camera_color_optical_frame", rospy.Time.now())
+      rospy.loginfo("transformation 'camera->base' received")
       # ang_cam_base = quaternion2euler(q_cam_base)
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
       rospy.logwarn("can't get tf information")
@@ -111,7 +121,10 @@ def main(args):
   while not rospy.is_shutdown():
     if pt.command:
       # Perform calculations
-      pt.resultLoader()
+      if not pt.resultLoader():
+        pt.command = False
+        pt.name = None
+        continue
       pt.poseGenerator()
 
       # Publish pose

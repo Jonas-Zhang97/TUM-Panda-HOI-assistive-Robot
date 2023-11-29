@@ -82,11 +82,13 @@ void ObjectDepthGeneration::objectDepthExtraction()
 
   ROS_INFO_STREAM("Size of the empty cv::Mat = " << objects_extracted_mat_.size);
   std::string empty_mat_path;
-  empty_mat_path = image_save_path_.append("empty_mat.jpg");
+  empty_mat_path = image_save_path_;
+  empty_mat_path = empty_mat_path.append("empty_mat.jpg");
   cv::imwrite(empty_mat_path, objects_extracted_mat_);
   
   depth_matrix_(cv_bounding_box_).copyTo(objects_extracted_mat_(cv_bounding_box_));
   std::string depth_mat_path;
+  depth_mat_path = image_save_path_;
   depth_mat_path = image_save_path_.append("object_extracted_mat.jpg");
   cv::imwrite(depth_mat_path, objects_extracted_mat_);
   ROS_INFO_STREAM("Image saved at /vision/doc/pics/test/object_extracted_mat.jpg");

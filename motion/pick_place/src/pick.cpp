@@ -12,8 +12,8 @@ bool Pick::init()
   // Initialize the move_group
   arm_group.setPlannerId("RRTConnectkConfigDefault");
   arm_group.setPlanningTime(30.0);
-  arm_group.setMaxAccelerationScalingFactor(0.3);
-  arm_group.setMaxVelocityScalingFactor(0.3);
+  arm_group.setMaxAccelerationScalingFactor(0.1);
+  arm_group.setMaxVelocityScalingFactor(0.1);
   arm_group.setEndEffectorLink("panda_hand");
   arm_group.setPoseReferenceFrame("panda_link0");
 
@@ -35,12 +35,21 @@ void Pick::update()
     std::vector<moveit_msgs::CollisionObject> table_model = generateCollisionModel(table_pose, table_primitive, table_name);
     PSI_.addCollisionObjects(table_model);
 
-    pick();
-
-    // Publish done flag
+    // Publish done flag or replan
     std_msgs::Bool pick_done;
-    pick_done.data = true;
-    pick_done_pub_.publish(pick_done);
+    pick_done.data = pick();
+    if (pick_done.data)
+    {
+      pick_done_pub_.publish(pick_done);
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Unable to complete pick motion, aborted!");
+      visual_tools.prompt("Press 'next' to replan a pick");
+      arm_group.setNamedTarget("ready");
+      arm_group.plan(arm_plan_);
+      arm_group.move();
+    }
 
     // Reset local flag
     has_target_ = false;
@@ -112,13 +121,13 @@ int Pick::openGripper()
 
 int Pick::prePickApproach()
 {
-  double padding_center_height = (target_pose_.pose.position.z - 0.12) / 2;
+  double padding_center_height = (target_pose_.pose.position.z); // - 0.12) / 2;
   std::vector<double> padding_pose = {0.4, 0.0, padding_center_height};
   std::vector<double> padding_primitive = {0.4, 1.0, padding_center_height * 2};
   std::string padding_name = "padding";
 
-  std::vector<moveit_msgs::CollisionObject> padding_model = generateCollisionModel(padding_pose, padding_primitive, padding_name);
-  PSI_.addCollisionObjects(padding_model);
+  // std::vector<moveit_msgs::CollisionObject> padding_model = generateCollisionModel(padding_pose, padding_primitive, padding_name);
+  // PSI_.addCollisionObjects(padding_model);
 
   ROS_INFO_STREAM("Approaching pre-pick pose");
   // Get the pre-pick goal
@@ -177,7 +186,7 @@ int Pick::closeGripper()
     
   goal.width = 0.005;
   goal.speed = 0.1;
-  goal.force = 20;
+  goal.force = 50;
   goal.epsilon.inner = 0.5;
   goal.epsilon.outer = 0.5;
   
@@ -217,6 +226,10 @@ int Pick::postPickRetreat()
   if (fraction >= 0.8)
   {
     arm_group.execute(trajectory);
+    
+    arm_group.setNamedTarget("ready");
+    arm_group.plan(arm_plan_);
+    arm_group.move();
   }
   else
   {

@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 
   ps.init();
 
-  ros::Rate loop_rate(0.1);
+  ros::Rate loop_rate(0.5);
   while (ros::ok())
   {
     ps.update();
