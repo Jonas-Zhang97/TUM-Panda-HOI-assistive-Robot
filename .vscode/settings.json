@@ -6,5 +6,6 @@
     "python.analysis.extraPaths": [
         "/home/yueyangzhang/ws_research/devel/lib/python3/dist-packages",
         "/opt/ros/noetic/lib/python3/dist-packages"
-    ]
+    ],
+    "cmake.sourceDirectory": "/home/zhihao/ws_hoi/src/TUM-Panda-HOI-assistive-Robot/common"
 }

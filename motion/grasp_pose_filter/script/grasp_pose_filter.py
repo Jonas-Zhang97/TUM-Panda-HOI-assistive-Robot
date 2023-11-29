@@ -13,7 +13,6 @@ from tf.transformations import quaternion_from_euler as euler2quaternion
 
 import numpy as np
 
-# TODO: Filter the grasp poses again with z-axis value, for that it doesn't make scense if the pose is to low
 class pose_talker:
   def __init__(self):
     # Read the output of the contact graspnet
@@ -61,11 +60,7 @@ class pose_talker:
       return False
     
 
-  def poseGenerator(self):     # Generate the grasp pose as a PoseStamped object
-    # Find the transformation with highest score
-    index_max_score = np.argmax(self.scores)
-    T_grasp_cam = np.array(self.pred_grasps_cam[index_max_score])
-
+  def poseGenerator(self):     # Generate the grasp pose as a PoseStamped object    
     # Listen to the trasnformation of the camera_color_optical_frame w.r.t panda_link0
     listener = tf.TransformListener()
     try:
@@ -77,13 +72,26 @@ class pose_talker:
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
       rospy.logwarn("can't get tf information")
     
+    # Store the tf transformation
     r_cam_base = quaternion2matrix(q_cam_base)
     T_cam_base = np.array(r_cam_base).reshape(4, 4)
     T_cam_base[0, 3] = t_cam_base[0]
     T_cam_base[1, 3] = t_cam_base[1]
     T_cam_base[2, 3] = t_cam_base[2]
-    
-    T_grasp_base = np.matmul(T_cam_base, T_grasp_cam)
+
+    # Find the transformation with highest score
+    for i in range(self.scores.shape[0]):
+      index_max_score = np.argmax(self.scores)
+      T_grasp_cam = np.array(self.pred_grasps_cam[index_max_score])
+
+      T_grasp_base = np.matmul(T_cam_base, T_grasp_cam)
+
+      if T_grasp_base[2, 3] > 0.1:
+        break
+      else:
+        rospy.logwarn("The pose with %s. highest confidence is with z-axis value: %s, which is under threshold, searching for the next pose", i + 1, T_grasp_base[2, 3])
+        self.scores = np.delete(self.scores, index_max_score)
+
 
     # cgn means that the quaternion is the direct output of contact graspnet
     # to apply it on the robot, it should be rotated +90 degree around the z
@@ -95,8 +103,10 @@ class pose_talker:
 
     q_grasp_base = self.quaternionMultiplication(q_to_fit_panda, q_grasp_base_cgn)
 
-    print(q_grasp_base)
-    print(t_grasp_base)
+    # print(q_grasp_base)
+    # print(t_grasp_base)
+
+    rospy.loginfo("grasp pose positioned at %s w.r.t. base", t_grasp_base)
 
     self.grasp_pose = PoseStamped()
     self.grasp_pose.pose.position.x = t_grasp_base[0]
