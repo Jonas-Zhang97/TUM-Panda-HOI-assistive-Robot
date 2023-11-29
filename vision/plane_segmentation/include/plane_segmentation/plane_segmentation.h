@@ -69,6 +69,8 @@ class PlaneSegmentation
     ros::Subscriber point_cloud_sub_;
 
     ros::Publisher objects_cloud_pub_;
+    ros::Publisher preprocessed_cloud_pub_;
+    ros::Publisher plane_cloud_pub_;
 
     CloudPtr raw_cloud_;                  //!< Inital raw point cloud
     CloudPtr preprocessed_cloud_;         //!< after preprocessing

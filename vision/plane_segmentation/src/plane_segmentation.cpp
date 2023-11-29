@@ -32,7 +32,7 @@ void PlaneSegmentation::preProcessCloud()
   pcl::PassThrough<PointT> pass_through_y;
   pass_through_y.setInputCloud(preprocessed_cloud_);
   pass_through_y.setFilterFieldName("y");
-  pass_through_y.setFilterLimits(-0.25, 0.3);
+  pass_through_y.setFilterLimits(-0.4, 0.6);
   pass_through_y.filter(*preprocessed_cloud_);
 }
 
@@ -108,8 +108,8 @@ void PlaneSegmentation::init()
   // Set subscriber and publishers
   point_cloud_sub_ = nh_.subscribe(point_cloud_topic, 1, &PlaneSegmentation::PointCloudCallback, this);
 
-  // preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
-  // plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);
+  preprocessed_cloud_pub_ = nh_.advertise<PointCloud>("/preprocessed_cloud", 1);
+  plane_cloud_pub_ = nh_.advertise<PointCloud>("/table_cloud", 1);
   objects_cloud_pub_ = nh_.advertise<PointCloud>("/hoi/objects_cloud", 1);
 
   // Set pointers for pcl
@@ -128,8 +128,8 @@ void PlaneSegmentation::update()
     preProcessCloud();
     segmentCloud();
 
-    // preprocessed_cloud_pub_.publish(*preprocessed_cloud_);
-    // plane_cloud_pub_.publish(*plane_cloud_);
+    preprocessed_cloud_pub_.publish(*preprocessed_cloud_);
+    plane_cloud_pub_.publish(*plane_cloud_);
     ROS_INFO_STREAM("Publishing object cloud");
     objects_cloud_pub_.publish(*objects_cloud_);
 
@@ -139,6 +139,7 @@ void PlaneSegmentation::update()
 
 void PlaneSegmentation::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg)
 {
+  ROS_INFO_STREAM("1");
   updated_ = true;
 
   point_cloud_frame_ = msg->header.frame_id;

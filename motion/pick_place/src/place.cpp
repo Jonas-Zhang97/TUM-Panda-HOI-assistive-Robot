@@ -1,8 +1,9 @@
 #include <pick_place/place.h>
 
+/*TODO: modify the place pose s.t. the orientation corresponds to the pick one to meke the place procedure safer*/
+
 bool Place::init()
 {
-  ROS_INFO_STREAM("Initializing place node");
   command_sub_ = nh_.subscribe("/hoi/pick_done", 1, &Place::commandCallback, this);
 
   place_done_pub_ = nh_.advertise<std_msgs::Bool>("/hoi/place_done", 1);
@@ -10,8 +11,8 @@ bool Place::init()
   // Initialize the move_group
   arm_group.setPlannerId("RRTConnectkConfigDefault");
   arm_group.setPlanningTime(30.0);
-  arm_group.setMaxAccelerationScalingFactor(0.3);
-  arm_group.setMaxVelocityScalingFactor(0.3);
+  arm_group.setMaxAccelerationScalingFactor(0.1);
+  arm_group.setMaxVelocityScalingFactor(0.1);
   arm_group.setEndEffectorLink("panda_hand");
   arm_group.setPoseReferenceFrame("panda_link0");
 
