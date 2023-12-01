@@ -100,7 +100,7 @@ void DepthImageConverter::imageGenerator()
     }
     else
     {
-      ROS_WARN_STREAM("outlier shows!");
+      ROS_WARN_STREAM("trying to map a point to depth image but current point is out of the image range");
       // If out, skip this point
       continue;
     }

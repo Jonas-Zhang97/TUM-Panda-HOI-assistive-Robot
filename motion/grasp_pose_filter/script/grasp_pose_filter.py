@@ -97,10 +97,10 @@ class pose_talker:
         if angle > 2.35:
           break
         else:
-          rospy.logwarn("gripper z orientation value: %s, current is the %s try, searching for the next pose", angle, i+1)
+          rospy.logwarn("gripper z orientation voilet threshold with %srad, searching for the %s. pose", angle, i+2)
           self.scores = np.delete(self.scores, index_max_score)
       else:
-        rospy.logwarn("pose height: %s, current is the %s try, searching for the next pose", tip_height, i+1)
+        rospy.logwarn("pose height voilate threshold with %sm, searching for the %s pose", tip_height, i+2)
         self.scores = np.delete(self.scores, index_max_score)
 
 

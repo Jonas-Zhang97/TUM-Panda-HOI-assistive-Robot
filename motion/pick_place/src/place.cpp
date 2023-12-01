@@ -1,11 +1,11 @@
 #include <pick_place/place.h>
 
-/*TODO: modify the place pose s.t. the orientation corresponds to the pick one to meke the place procedure safer*/
+//TODO: modify the place pose s.t. the orientation corresponds to the pick one to meke the place procedure safer
 
 bool Place::init()
 {
   command_sub_ = nh_.subscribe("/hoi/pick_done", 1, &Place::commandCallback, this);
-  pose_sub_ = nh_.subscribe("/hoi/grasp_pose", 1, &Place::poseCallback, this)
+  pose_sub_ = nh_.subscribe("/hoi/grasp_pose", 1, &Place::poseCallback, this);
   place_done_pub_ = nh_.advertise<std_msgs::Bool>("/hoi/place_done", 1);
 
   // Initialize the move_group
@@ -101,11 +101,6 @@ bool Place::place()
 
 int Place::prePlaceApproach()
 {
-  // Get current pose of the robot arm
-  geometry_msgs::PoseStamped curr_pose = arm_group.getCurrentPose();
-  curr_quaternion_ = curr_pose.pose.orientation;
-  grasp_height_ = curr_pose.pose.position.z - 0.4;
-
   // Add padding
   // double padding_center_height = 0.15;
   // std::vector<double> padding_pose = {0.4, 0.0, padding_center_height};
@@ -120,8 +115,8 @@ int Place::prePlaceApproach()
   pre_approach_goal.header.frame_id = "panda_link0";
   pre_approach_goal.pose.position.x = 0.6;
   pre_approach_goal.pose.position.y = 0;
-  pre_approach_goal.pose.position.z = grasp_height_ + 0.23;
-  pre_approach_goal.pose.orientation = curr_quaternion_;
+  pre_approach_goal.pose.position.z = grasp_height_ + 0.1;
+  pre_approach_goal.pose.orientation = grasp_orientation_;
 
   ROS_INFO_STREAM("Approaching pre-place pose: " << pre_approach_goal);
 
@@ -151,8 +146,8 @@ int Place::toPlacePose()
   geometry_msgs::Pose place_pose;
   place_pose.position.x = 0.6;
   place_pose.position.y = 0;
-  place_pose.position.z = grasp_height_ + 0.03;
-  place_pose.orientation = curr_quaternion_;
+  place_pose.position.z = grasp_height_+0.03;
+  place_pose.orientation = grasp_orientation_;
 
   std::vector<geometry_msgs::Pose> waypoints;
   waypoints.push_back(place_pose);
@@ -202,7 +197,7 @@ int Place::postPlaceRetreat()
   post_retreat_goal.position.x = 0.6;
   post_retreat_goal.position.y = 0;
   post_retreat_goal.position.z = grasp_height_ + 0.2;
-  post_retreat_goal.orientation = curr_quaternion_;
+  post_retreat_goal.orientation = grasp_orientation_;
   
   std::vector<geometry_msgs::Pose> waypoints;
   waypoints.push_back(post_retreat_goal);
@@ -287,8 +282,8 @@ void Place::removeObject(const std::string &name)
 
 void Place::poseCallback(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
-  grasp_orientation_ = msg->pose.orientation
-  grasp_height_ = msg->pose.position.z
+  grasp_orientation_ = msg->pose.orientation;
+  grasp_height_ = msg->pose.position.z;
 }
 
 void Place::commandCallback(const std_msgs::BoolConstPtr &msg)

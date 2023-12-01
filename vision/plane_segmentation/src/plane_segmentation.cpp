@@ -139,7 +139,6 @@ void PlaneSegmentation::update()
 
 void PlaneSegmentation::PointCloudCallback(const sensor_msgs::PointCloud2ConstPtr &msg)
 {
-  ROS_INFO_STREAM("1");
   updated_ = true;
 
   point_cloud_frame_ = msg->header.frame_id;
