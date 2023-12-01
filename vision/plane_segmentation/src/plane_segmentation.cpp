@@ -1,5 +1,7 @@
 #include <plane_segmentation/plane_segmentation.h>
 
+// TODO: Modify the range of the table to include a larger y scale
+
 void PlaneSegmentation::preProcessCloud()
 {
   // Downsampling to make dense to sparse, save in ds_cloud
