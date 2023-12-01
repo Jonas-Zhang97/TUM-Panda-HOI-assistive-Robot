@@ -31,15 +31,19 @@ Now, proceed with the configuration of the computers using the following steps:
 
 ### On the Computer to Control the Robot
 
-1. The Franka_ros package and the realtime kernel have to be configured. Please refer to the [official tutorial](https://frankaemika.github.io/docs/installation_linux.html) provided by Franka Emika for detailed instuctions.
+1. Connect robot to the computer;
 
-2. MoveIt! packages (or at least panda_moveit_config) are required for the robot control, see installition instuctions [here](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html).
+2. The Franka_ros package and the realtime kernel have to be configured. Please refer to the [official tutorial](https://frankaemika.github.io/docs/installation_linux.html) provided by Franka Emika for detailed instuctions;
+
+3. MoveIt! packages (or at least panda_moveit_config) are required for the robot control, see installition instuctions [here](https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html).
 
 ### On the Computer to Perform the Calculations
 
-Firstly, install the [Nvidia driver](https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html) and [CUDA](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
+Connect your camera to the computer.
 
-Clone and configure the [Contact Graspnet](https://github.com/NVlabs/contact_graspnet) repo.
+Subsequently, install the [Nvidia driver](https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html) and [CUDA](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
+
+Clone and configure the [Contact GraspNet](https://github.com/Jonas-Zhang97/contact_graspnet_hoi) repo, this repo is forked from [Contact GraspNet](https://github.com/NVlabs/contact_graspnet) with modified hyperparameters to suit the project's implementation, specifically, to corpe with the situation when the size of input point cloud is limited.
 
 Create a workspace for the codebase:
 
@@ -62,6 +66,8 @@ Next, proceed to the file labeled `TUM-Panda-HOI-assistive-Robot/vision/vision_c
 
 As previously instructed, access the file labeled `TUM-Panda-HOI-assistive-Robot/motion/motion_common/config/path_settings.yaml`. In this location, tailor the paths to match your implementation's requirements.
 
+Subsequently, open `TUM-Panda-HOI-assistive-Robot/common/launch/camera_pose.launch`, adjust the launch file of tf-transformation-broadcaster to the one you created during camera calibration, this guarantees that the camera pose is correctly configured and that robot can move correctly. In the same file, also modify the launch file for camera to meet your implementation.
+
 Finally, build the workspace:
 
 ```bash
@@ -71,27 +77,13 @@ catkin build -DCMAKE_BUILD_TYPE=Release
 
 ## Run the Code
 
-Firstly, launch the realsense camera:
-
-```bash
-roslaunch realsense2_camera rs_camera.launch enable_pointcloud:=true align_depth:=true
-```
-
-On the computer to control the robot, open 2 terminals, in the first one, launch the robot control:
+On the computer to connect and control the robot, launch the robot moveit control:
 
 ```bash
 roslaunch panda_moveit_config franka_control.launch robot_ip:=<fci_ip>
 ```
 
-in the second one, launch the camera pose tf talker, you should generate your own tf talker by perform a camera calibration procedure.
-
-The camera tf talker during the development can be launched with:
-
-```bash
-roslaunch common camera_pose.launch
-```
-
-On the computer for calculations, open 3 terminals, in the first one, launch the object detection:
+On the computer for calculations, open 3 terminals. Firstly, launch the object_detection, which launches camera and pose broadcaster in the mean time:
 
 ```bash
 roslaunch object_detection object_detection.launch
