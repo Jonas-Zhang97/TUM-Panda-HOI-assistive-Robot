@@ -1,6 +1,6 @@
 #include <pick_place/place.h>
 
-//TODO: modify the place pose s.t. the orientation corresponds to the pick one to meke the place procedure safer
+//TODO: padding the planning scene to reduce the posibility of collision
 
 bool Place::init()
 {
