@@ -23,7 +23,7 @@ Following the generation of these grasp poses, the pose possessing the utmost sc
 
 ## Pre-request
 
-For the control of the Franka Emika Panda robot arm, a real-time kernel is essential. However, due to its incompatibility with Nvidia driver and CUDA, a dual-computer setup becomes necessary. One computer is designated for robot control, while the other handles Pose detection.
+For the control of the Franka Emika Panda robot arm, a real-time kernel is essential. However, due to its incompatibility with Nvidia driver and CUDA, a dual-computer setup becomes necessary. One computer is designated for robot control, while the other handles grasp pose detection and path planning.
 
 Both computers must have [ROS](http://wiki.ros.org/noetic/Installation) (Robot Operating System) installed. Ensure that both computers are connected to the same network and capable of seamless communication, following the guidelines outlined in [this tutorial](http://wiki.ros.org/ROS/Tutorials/MultipleMachines). The computer for controling the robot should work as the master node.
 
