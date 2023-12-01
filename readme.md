@@ -43,7 +43,7 @@ Connect your camera to the computer.
 
 Subsequently, install the [Nvidia driver](https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html) and [CUDA](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
 
-Clone and configure the [Contact GraspNet](https://github.com/Jonas-Zhang97/contact_graspnet_hoi) repo, this repo is forked from [Contact GraspNet](https://github.com/NVlabs/contact_graspnet) with modified hyperparameters to suit the project's implementation, specifically, to corpe with the situation when the size of input point cloud is limited.
+Clone and configure the [Contact GraspNet HOI](https://github.com/Jonas-Zhang97/contact_graspnet_hoi) repo, this repo is forked from [original Contact GraspNet](https://github.com/NVlabs/contact_graspnet) with modified hyperparameters to suit the project's implementation, specifically, to corpe with the situation when the size of input point cloud is limited.
 
 Create a workspace for the codebase:
 
