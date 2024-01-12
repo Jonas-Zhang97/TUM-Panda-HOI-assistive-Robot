@@ -94,7 +94,6 @@ bool Place::place()
     return false;
   }
 
-  visual_tools.prompt("press 'next' to the next loop.");
 
   return true;
 }

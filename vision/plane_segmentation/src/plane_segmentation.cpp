@@ -20,7 +20,7 @@ void PlaneSegmentation::preProcessCloud()
   pcl::PassThrough<PointT> pass_through_z;
   pass_through_z.setInputCloud(transf_cloud);
   pass_through_z.setFilterFieldName("z");
-  pass_through_z.setFilterLimits(0.0, 0.4);    // just for test
+  pass_through_z.setFilterLimits(-0.05, 0.4);    // just for test
   pass_through_z.filter(*preprocessed_cloud_);
   
   // Filter the point cloud in x direction to remove the wall
@@ -34,7 +34,7 @@ void PlaneSegmentation::preProcessCloud()
   pcl::PassThrough<PointT> pass_through_y;
   pass_through_y.setInputCloud(preprocessed_cloud_);
   pass_through_y.setFilterFieldName("y");
-  pass_through_y.setFilterLimits(-0.4, 0.6);
+  pass_through_y.setFilterLimits(-0.4, std::numeric_limits<double>::max());
   pass_through_y.filter(*preprocessed_cloud_);
 }
 
@@ -46,9 +46,9 @@ void PlaneSegmentation::segmentCloud()
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
 
   seg.setOptimizeCoefficients(true);
-  Eigen::Vector3f sac_axis(0.0, 0.0, 1.0);
-  seg.setAxis(sac_axis);
-  seg.setModelType(pcl::SACMODEL_PARALLEL_PLANE);
+  // Eigen::Vector3f sac_axis(0.0, 0.0, 1.0);
+  // seg.setAxis(sac_axis);
+  seg.setModelType(pcl::SACMODEL_PLANE);
   seg.setMethodType(pcl::SAC_RANSAC);
   seg.setMaxIterations(100);
   seg.setDistanceThreshold(0.01);

@@ -106,7 +106,7 @@ void DepthImageConverter::imageGenerator()
     }
   }
 
-  cv::imwrite("/home/franka/ws_perception/src/vision/doc/pics/test/depth_mat.jpg", depth_mat);
+  cv::imwrite("/home/zhihao/ws_hoi/src/TUM-Panda-HOI-assistive-Robot/vision/doc/test_pics/image_from_cloud.jpg", depth_mat);
 
   cv_bridge::CvImage depth_cv_image;
   depth_cv_image.header.frame_id = "camera_color_optical_frame";

@@ -94,7 +94,7 @@ class pose_talker:
 
       # TODO: specifiy some extra filter for some objects 
       if T_grasp_base[2, 3] > 0.1:
-        if angle > 2.35:
+        if angle > 2.62:
           break
         else:
           rospy.logwarn("gripper z orientation voilet threshold with %srad, searching for the %s. pose", angle, i+2)

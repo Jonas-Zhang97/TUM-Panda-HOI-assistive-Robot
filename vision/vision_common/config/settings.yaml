@@ -7,7 +7,7 @@ npy_path: "/home/zhihao/contact_graspnet_hoi/depth_image_data/"
 
 ## To visualize the calculation, some image is generated and saved according to the following path
 
-image_path: "/home/zhihao/ws_hoi/src/vision/doc/pics/test/"
+image_path: "/home/zhihao/ws_hoi/src/TUM-Panda-HOI-assistive-Robot/vision/doc/test_pics/"
 
 # Topic Setting
 
